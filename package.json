@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/tiheng0928/nodejs_memorygame#readme",
   "dependencies": {
+    "ejs": "^2.5.5",
     "firebase": "^3.6.4"
   }
 }
