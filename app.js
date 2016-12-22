@@ -8,13 +8,8 @@ app.set('port', (process.env.PORT || 3000));
 
 //首頁
 app.get('/', function(req, res){
-	//定義需要的資料
 	
-	//進入首頁
-	res.render('pages/index',{
-		//傳入首頁的資料
-		
-	});
+	res.render('pages/index.ejs');
 	
 });
 
