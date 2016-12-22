@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<% include ../partials/head %>
+</head>
+<body>
+
+	<script type="text/javascript">
+		var socket = io.connect();
+		$(document).ready(function() {
+			var name = prompt("請輸入名字","player");
+			if(name=="" || name ==null){
+				name = "player";
+			}
+			console.log("new player:"+name);
+
+			//通知房間裡所有人有玩家進入
+			socket.emit('player entered',{name:name});
+			
+
+
+		});
+	</script>
+
+
+
+	<div id="gameBlock">
+		<ul id="123" style="list-style:none;float:left;">
+			<li style="width:25px;height:25px;"><button class='button' id='1' value='1' style="width:25px;height:25px;margin-bottom:10px;">1</button></li>
+			<li style="width:25px;height:25px;"><button class='button' id='2' value='2' style="width:25px;height:25px;margin-bottom:10px;">2</button></li>
+			<li style="width:25px;height:25px;"><button class='button' id='3' value='3' style="width:25px;height:25px;margin-bottom:10px;">3</button></li>
+		</ul>
+		<ul id="456" style="list-style:none;float:left;">
+			<li style="width:25px;height:25px;"><button class='button' id='4' value='4' style="width:25px;height:25px;margin-bottom:10px;">4</button></li>
+			<li style="width:25px;height:25px;"><button class='button' id='5' value='5' style="width:25px;height:25px;margin-bottom:10px;">5</button></li>
+			<li style="width:25px;height:25px;"><button class='button' id='6' value='6' style="width:25px;height:25px;margin-bottom:10px;">6</button></li>
+		</ul>
+		<ul id="789" style="list-style:none;float:left;">
+			<li style="width:25px;height:25px;"><button class='button' id='7' value='7' style="width:25px;height:25px;margin-bottom:10px;">7</button></li>
+			<li style="width:25px;height:25px;"><button class='button' id='8' value='8' style="width:25px;height:25px;margin-bottom:10px;">8</button></li>
+			<li style="width:25px;height:25px;"><button class='button' id='9' value='9' style="width:25px;height:25px;margin-bottom:10px;">9</button></li>
+		</ul>
+	</div>
+</body>
+</html>
