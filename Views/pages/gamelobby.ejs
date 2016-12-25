@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<% include ../partials/head %>
+	<title>遊戲大廳</title>
+	<script>
+		var socket = io.connect();
+		var joined_player=0;
+	</script>
+</head>
+
+<body>
+	<div class="wrap">
+		<div class="header">
+			<h1>遊戲大廳</h1>
+		</div>
+		<div class="content">
+			<div class="room_area">
+				<div class="room">
+					<li><img src="../../public/assets/image/player.png" id="player_1"></li>
+					<li><img src="../../public/assets/image/player.png" id="player_2"></li>
+					<li><img src="../../public/assets/image/player.png" id="player_3"></li>
+					<li><img src="../../public/assets/image/player.png" id="player_4"></li>
+					<div class="clear"></div>
+					<input type="checkbox" id="join"><button type="submit" class="join_disable" disabled="disabled">加入房間</button><br>
+					<a href="room.html"><button type="submit" id="play_btn" class="play" disabled="disabled">Play!</button></a>
+				</div>
+
+				<script>
+
+					$( document ).on( "click", "#join", function(){
+							if($("#join").prop("checked")){
+								//joined_player++;
+								socket.emit('player_num_plus');
+								console.log('click');
+								//console.log('joined_player');				
+							}
+							else{
+								//joined_player--;
+								socket.emit('player_num_del');
+							}
+							//所有人都看到
+							socket.on('check_player_num',function(room){
+								joined_player = room.playernum;
+								console.log(joined_player);
+								switch(room.playernum){
+									case 0:
+										$("#player_1").attr("src","../../public/assets/image/player.png");
+										$("#player_2").attr("src","../../public/assets/image/player.png");
+										$("#player_3").attr("src","../../public/assets/image/player.png")
+										$("#player_4").attr("src","../../public/assets/image/player.png")
+										console.log('case0');
+										break;
+									case 1:
+										$("#player_1").attr("src","../../public/assets/image/player_joined.png");
+										$("#player_2").attr("src","../../public/assets/image/player.png");
+										$("#player_3").attr("src","../../public/assets/image/player.png")
+										$("#player_4").attr("src","../../public/assets/image/player.png")
+										console.log('case1');
+										break;
+									case 2:
+										$("#player_1").attr("src","../../public/assets/image/player_joined.png");
+										$("#player_2").attr("src","../../public/assets/image/player_joined.png");
+										$("#player_3").attr("src","../../public/assets/image/player.png")
+										$("#player_4").attr("src","../../public/assets/image/player.png")
+										console.log('case2');
+										break;
+									case 3:
+										$("#player_1").attr("src","../../public/assets/image/player_joined.png");
+										$("#player_2").attr("src","../../public/assets/image/player_joined.png");
+										$("#player_3").attr("src","../../public/assets/image/player_joined.png")
+										$("#player_4").attr("src","../../public/assets/image/player.png")
+										console.log('case3');
+										break;
+									case 4:
+										$("#player_1").attr("src","../../public/assets/image/player_joined.png")
+										$("#player_2").attr("src","../../public/assets/image/player_joined.png")
+										$("#player_3").attr("src","../../public/assets/image/player_joined.png")
+										$("#player_4").attr("src","../../public/assets/image/player_joined.png")
+										console.log('case4');
+										break;
+									
+								}
+							});//End
+							
+
+							//排隊中ID看到
+							socket.on('playable',function(){
+								document.getElementById("play_btn").disabled = false;
+							});
+							socket.on('playdisable',function(){
+								$("#play_btn").attr("disabled","disabled");
+							});
+								
+							
+							
+							
+							//End
+
+							//未排隊ID看到
+							//if(joined_player==4){
+								//$("#join").hide();
+								//$(".join_disable").show();
+							//}
+							//else{
+								//$("#join").show();
+								//$(".join_disable").hide();
+							//}//End
+						});	
+						  		
+				</script>
+			</div>
+			<div class="msg_area">
+				<h2>目前在線人數: 1人</h2>
+		</div>
+	</div>
+</body>
+</html>

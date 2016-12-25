@@ -1,0 +1,20 @@
+.game_area{
+	width:70%;
+	height: 100%;
+	border-right: 1px solid #898989;
+	text-align: center;
+	padding-top: 110px;
+	box-sizing: border-box;
+	float: left;
+}
+.player{
+
+}
+
+.msg_area{
+	width: 30%;
+	height: 100%;
+	float: right;
+	padding-top: 30px;
+	box-sizing: border-box;
+}

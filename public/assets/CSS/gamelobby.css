@@ -1,0 +1,134 @@
+.room_area{
+	width:70%;
+	height: 100%;
+	border-right: 1px solid #898989;
+	text-align: center;
+	padding-top: 110px;
+	box-sizing: border-box;
+	float: left;
+}
+.room{
+	width: 200px;
+	height: 280px;
+	border:1.5px solid #898989;
+	border-radius: 5px;
+	text-align: center;
+	margin: auto;
+	padding-top: 50px;
+	box-sizing: border-box;
+}
+.room li{
+	list-style: none;
+	float: left;
+	width: 25%;
+	margin-bottom: 50px;
+}
+.room img{
+	width: 50px;
+	height: 50px;
+}
+.clear{
+	clear: both;
+}
+
+/*------------------按鈕--------------------*/
+@-webkit-keyframes queue-animation {
+  from {background: white; color: #3399FF; width: 100px;}
+  to {background:#3399FF; border-color: #3399FF; color: #ffffff; width: 100px;}
+}
+@-webkit-keyframes unqueue-animation {
+  from {background: #3399FF; color: #ffffff; width: 100px;}
+  to {background: white; border-color: #3399FF; color: #3399FF; width: 100px;}
+}
+/* Standard syntax */
+@keyframes queue-animation {
+  from {background: white; color: #3399FF; width: 100px;}
+  to {background: #3399FF; border-color: #3399FF; color: #ffffff; width: 100px; }
+}
+@keyframes unqueue-animation {
+  from {background: #3399FF; color: #ffffff; width: 100px;}
+  to {background: white; border-color: #3399FF; color: #3399FF; width: 100px; }
+}
+@-webkit-keyframes zoom {
+    from {-webkit-transform:scale(0)} 
+    to {-webkit-transform:scale(1)}
+}
+
+@keyframes zoom {
+    from {transform:scale(0)} 
+    to {transform:scale(1)}
+}
+input {
+  -webkit-appearance: none;
+  margin-bottom: 10px;
+}
+input:after {
+  color: #3399FF;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 16px;
+  font-weight: 200;
+  background-color: #ffffff;
+  border: 1px solid;
+  border-color: #3399FF;
+  border-radius: 3px;
+  cursor: pointer;
+  display: inline-block;
+  text-align: center;
+  padding: 5px 10px;
+
+
+  content: '加入房間';
+  -webkit-animation: unqueue-animation 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  -webkit-animation-fill-mode:forwards;
+  animation: unqueue-animation 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation-fill-mode:forwards;
+}
+
+input:checked:after {
+  content: '取消排隊';
+  -webkit-animation: queue-animation 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  -webkit-animation-fill-mode:forwards;
+  animation: queue-animation 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation-fill-mode:forwards;
+}
+.join_disable{
+	width: 120px;
+	height: 35px;
+	display:none;
+	font-family: 'Noto Sans TC', sans-serif;
+	margin-bottom: 10px;
+	border-radius: 3px;
+}
+.play{
+	width: 120px;
+	font-family: 'Quicksand', sans-serif;
+	font-size: 16px;
+	color: #fff;
+	padding: 5px 10px;
+	background: #01abad;
+	border: none;
+	border-radius: 3px;
+	cursor: pointer;
+}
+button[disabled=disabled]{
+	border: 1px solid #BCBCBC;
+	background: #FFF;
+	color: #BCBCBC;
+	cursor: default;
+}
+.msg_area{
+	width: 30%;
+	height: 100%;
+	float: right;
+	padding-top: 30px;
+	box-sizing: border-box;
+}
+h2{
+	font-weight: 200;
+	margin-bottom: 15px;
+	font-size: 18px;
+}
+.msg_area p{
+	font-weight: 200;
+	margin-bottom: 5px;
+}
