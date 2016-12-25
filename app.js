@@ -7,7 +7,7 @@ var room = {playernum: 0}
 
 app.set('view engine', 'ejs' );
 app.set('port', (process.env.PORT || 3000));
-
+app.use(express.static('public'));
 //­º­¶
 
 app.get('/', function(req, res){
@@ -53,7 +53,7 @@ io.on('connection', function(socket) {
 		room.playernum--;
 		console.log(room.playernum);
 		io.sockets.emit('check_player_num',{playernum:room.playernum});
-		if (room.playernum ==! 4) {
+		if (room.playernum != 4) {
 			io.sockets.emit('playdisable');
 		}
 	});
