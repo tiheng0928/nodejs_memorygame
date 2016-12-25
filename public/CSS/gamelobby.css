@@ -94,6 +94,8 @@ input:checked:after {
 .join_disable{
 	width: 120px;
 	height: 35px;
+	font-size: 16px;
+    font-weight: 200;
 	display:none;
 	font-family: 'Noto Sans TC', sans-serif;
 	margin-bottom: 10px;
