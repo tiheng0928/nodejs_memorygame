@@ -3,113 +3,146 @@
 <head>
 	<% include ../partials/head %>
 	<meta charset=utf-8 /> 	
+	<script src="//connect.facebook.net/en_US/sdk.js"></script>
+	<script>
+  		FB.init({
+    		/**********************************************************************
+    		 * TODO(Developer): Change the value below with your Facebook app ID. *
+     		**********************************************************************/
+    	appId      : '223945271385893',
+    	status     : true,
+    	xfbml      : true,
+    	version    : 'v2.8'
+  	});
+	</script>
 </head>
 <body>
-	<script type="text/javascript">
-		function toggleSignIn(){
-			if(!firebase.auth().currentUser) {
-				var provider = new firebase.auth.FacebookAuthProvider();
-				provider.addScope('public_profile');
-				provider.addScope('email');
-				provider.addScope('user_about_me');
-				
-				
-				firebase.auth().signInWithPopup(provider).then(function(result){
-					var token = result.credential.accessToken;
-					var user = result.user;
-				}).catch(function(error){
-					var errorCode = error.code;
-					var errorMessage = error.message;
-					var email = error.email;
-					//The firebase.auth.AuthCredential type that was used.
-					var credential = error.credential;
+	FB.Event.subscribe('auth.authResponseChange', checkLoginState);
+	
+	<script>
+		/* Handle 建立使用者方法 */
+        var create_error_func = function(error) {
+                  var errorCode     = error.code;
+                  var errorMessage  = error.message;
+                  alert("註冊失敗:"+errorMessage);
+                  window.location.replace("http://localhost:3000/");  
+        }
+        var create_success_func = function(error) {
+                  alert("註冊成功");
+                  window.location.replace("http://localhost:3000/");  
+        }        
+        
+        
+        /* Handle 使用者登入方法 */
+        var login_error_func = function(error) {
+                  var errorCode     = error.code;
+                  var errorMessage  = error.message;
+                  alert("登入失敗:"+errorMessage+"將跳轉回到首頁");
+                  window.location.replace("http://localhost:3000/");  
+        }
+        var login_success_func = function(error) {
+                  alert("登入成功，將跳轉進入遊戲大廳");
+                  window.location.replace("http://localhost:3000/gamelobby");  
+        }          
+        
+        $(document).ready(function(){
+            /* 建立使用者 */
+            $("#create_user").click(function(){
+                var email       = $('#create_email').val();
+                var password    = $('#create_password').val(); 
+                firebase.auth().createUserWithEmailAndPassword(email,password).then(create_success_func).catch(create_error_func);
+                
+            });
+            
+            /* 登入使用者 */
+            $("#login_user").click(function(){
+                var email       = $('#login_email').val();
+                var password    = $('#login_password').val(); 
+                firebase.auth().signInWithEmailAndPassword(email, password).then(login_success_func).catch(login_error_func);
+                
+            });            
+        });        
 
-					if (errorCode === 'auth/account-exists-with-different-credential') {
-						alert('You have already signed up with a different auth provider for that email.');
-					} else{
-						console.error(error);
-					}
-				});
-			
-			}else{
-				firebase.auth().signOut();	
-			}
 		
-			//document.getElementById('quickstart-sign-in').disabled = true;
+		
+		FB.Event.subscribe('auth.authResponseChange', checkLoginState);
+
+		function checkLoginState(event) {
+  			if (event.authResponse) {
+    			// User is signed-in Facebook.
+    			var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
+      				unsubscribe();
+      				// Check if we are already signed-in Firebase with the correct user.
+      				if (!isUserEqual(event.authResponse, firebaseUser)) {
+        				// Build Firebase credential with the Facebook auth token.
+        				var credential = firebase.auth.FacebookAuthProvider.credential(event.authResponse.accessToken);
+        				// Sign in with the credential from the Facebook user.
+        				firebase.auth().signInWithCredential(credential).catch(function(error) {
+          					// Handle Errors here.
+          					var errorCode = error.code;
+          					var errorMessage = error.message;
+          					// The email of the user's account used.
+          					var email = error.email;
+          					// The firebase.auth.AuthCredential type that was used.
+          					var credential = error.credential;
+          					// ...
+        				});
+      				} else {
+        			// User is already signed-in Firebase with the correct user.
+        			//window.location('http://localhost:3000/gamelobby');
+      				}
+    			});
+  			} else {
+    			// User is signed-out of Facebook.
+    			firebase.auth().signOut();
+    			//window.location('http://localhost:3000/');
+  			}
 		}
 
-
-		function initApp(){
-			firebase.auth().onAuthStateChanged(function(user){
-				if (user){
-					var displayName = user.displayName;
-			        var email = user.email;
-			        var emailVerified = user.emailVerified;
-			        var photoURL = user.photoURL;
-			        var isAnonymous = user.isAnonymous;
-			        var uid = user.uid;
-			        var providerData = user.providerData;
-
-			        document.getElementById('quickstart-sign-in-status').textContent = 'Signed in';
-          			document.getElementById('quickstart-sign-in').textContent = 'Log out';
-          			document.getElementById('quickstart-account-details').textContent = JSON.stringify(user, null, '  ');
-				}else{
-					document.getElementById('quickstart-sign-in-status').textContent = 'Signed out';
-          			document.getElementById('quickstart-sign-in').textContent = 'Log in with Facebook';
-          			document.getElementById('quickstart-account-details').textContent = 'null';
-          			document.getElementById('quickstart-oauthtoken').textContent = 'null';
-				}
-
-				document.getElementById('quickstart-sign-in').disabled = false;
-			});
-			document.getElementById('quickstart-sign-in').addEventListener('click', toggleSignIn, false);
+		function isUserEqual(facebookAuthResponse, firebaseUser) {
+  			if (firebaseUser) {
+    			var providerData = firebaseUser.providerData;
+    			for (var i = 0; i < providerData.length; i++) {
+      				if (providerData[i].providerId === firebase.auth.FacebookAuthProvider.PROVIDER_ID &&
+          			providerData[i].uid === facebookAuthResponse.userID) {
+       					// We don't need to re-auth the Firebase connection.
+        				return true;
+      				}
+    			}
+  			}
+  			return false;
 		}
 
-		window.onload = function(){
-			initApp();
-		};
+		var credential = firebase.auth.FacebookAuthProvider.credential(access_token);
+
+		// Sign in with credential from the Google user.
+		firebase.auth().signInWithCredential(credential).catch(function(error) {
+  			// Handle Errors here.
+  			var errorCode = error.code;
+  			var errorMessage = error.message;
+  			// The email of the user's account used.
+  			var email = error.email;
+  			// The firebase.auth.AuthCredential type that was used.
+  			var credential = error.credential;
+  			// ...
+		});
+		
 
 	</script>
+	<h4>註冊使用者帳號</h4>
+    <input type="text" id="create_email"     placeholder="Email"/>
+    <input type="text" id="create_password"  placeholder="密碼"/>
+    <button id="create_user">註冊</button>
+  
+    <h4>登入使用者帳號</h4>
+    <input type="text" id="login_email"     placeholder="Email"/>
+    <input type="text" id="login_password"  placeholder="密碼"/>
+    <button id="login_user" >登入</button> </br> 
 
-<div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+	<fb:login-button data-auto-logout-link="true" scope="public_profile,email" size="large" onclick='signInWithPopup()'></fb:login-button>
+	<!--<button class="fb-login-button" onclick='toggleSignInFB()'>Login with Facebook</button>-->
 
-  <!-- Header section containing title -->
-  <header class="mdl-layout__header mdl-color-text--white mdl-color--light-blue-700">
-    <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
-      <div class="mdl-layout__header-row mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--8-col-desktop">
-        <a href="/"><h3>Firebase Authentication</h3></a>
-      </div>
-    </div>
-  </header>
-
-  <main class="mdl-layout__content mdl-color--grey-100">
-    <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
-
-      <!-- Container for the demo -->
-      <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
-        <div class="mdl-card__title mdl-color--light-blue-600 mdl-color-text--white">
-          <h2 class="mdl-card__title-text">Facebook Authentication with Popup</h2>
-        </div>
-        <div class="mdl-card__supporting-text mdl-color-text--grey-600">
-          <p>Log in with your Facebook account below.</p>
-
-          <!-- Button that handles sign-in/sign-out -->
-          <button disabled class="mdl-button mdl-js-button mdl-button--raised" id="quickstart-sign-in">Log in with Facebook</button>
-
-          <!-- Container where we'll display the user details -->
-          <div class="quickstart-user-details-container">
-            Firebase sign-in status: <span id="quickstart-sign-in-status">Unknown</span>
-            <div>Firebase auth <code>currentUser</code> object value:</div>
-            <pre><code id="quickstart-account-details">null</code></pre>
-            <div>Facebook OAuth Access Token:</div>
-            <pre><code id="quickstart-oauthtoken">null</code></pre>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
-</div>
-
+	
 
 </body>
 </html>
