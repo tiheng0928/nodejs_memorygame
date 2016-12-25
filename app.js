@@ -15,10 +15,10 @@ app.get('/', function(req, res){
 	res.render('pages/index.ejs');
 });
 
-//play­¶
-app.get('/play', function(req, res){
+//gaming­¶
+app.get('/gaming', function(req, res){
 	//¶i¤Jplay­¶
-	res.render('pages/play');
+	res.render('pages/gaming');
 });
 
 //gaming­¶
