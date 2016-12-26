@@ -8,6 +8,20 @@
 		var socket = io.connect();
 		var joined_player;
 		var enter_id;
+		var currentUserId;
+       	var	userName;
+        var email;
+		
+		firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            currentUserId = user.uid;
+       		userName = user.displayName;
+            email = user.email;
+            console.log(userName);
+            console.log(currentUserId);
+        }
+    });
+
 	</script>
 </head>
 
@@ -107,7 +121,18 @@
 				</script>
 			</div>
 			<div class="msg_area">
+				
 				<h2>目前在線人數: 1人</h2>
+				<script>
+					console.log('helloooo');
+					Database.ref('users/' + currentUserId).on('value', function(snapshot) {
+        			console.log(snapshot.val());
+        			$('.msg_area').append('<p>歡迎回來：'+ snapshot.userName + '</p>');
+					//document.write('<h3>歡迎回來' + snapshot.userName + '</h3>');
+				});
+					console.log('opppppsssss');
+				</script>
+
 		</div>
 	</div>
 </body>

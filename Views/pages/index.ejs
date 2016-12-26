@@ -12,50 +12,8 @@
 
 		var currentUserId;
         var userName;
-        var userImage;
-
-		/* Handle 建立使用者方法 */
-        var create_error_func = function(error) {
-                  var errorCode     = error.code;
-                  var errorMessage  = error.message;
-                  alert("註冊失敗:"+errorMessage);
-                  window.location.replace("http://localhost:3000/");  
-        }
-        var create_success_func = function(error) {
-                  alert("註冊成功，即將進入遊戲大廳");
-                  window.location.replace("http://localhost:3000/gamelobby");  
-        }        
-        
-        
-        /* Handle 使用者登入方法 */
-        var login_error_func = function(error) {
-                  var errorCode     = error.code;
-                  var errorMessage  = error.message;
-                  alert("登入失敗:"+errorMessage+"將跳轉回到首頁");
-                  window.location.replace("http://localhost:3000/");  
-        }
-        var login_success_func = function(error) {
-                  alert("登入成功，將跳轉進入遊戲大廳");
-                  window.location.replace("http://localhost:3000/gamelobby");  
-        }          
-        
-        $(document).ready(function(){
-            /* 建立使用者 */
-            $("#create_user").click(function(){
-                var email       = $('#create_email').val();
-                var password    = $('#create_password').val(); 
-                firebase.auth().createUserWithEmailAndPassword(email,password).then(create_success_func).catch(create_error_func);
-                
-            });
-            
-            /* 登入使用者 */
-            $("#login_user").click(function(){
-                var email       = $('#login_email').val();
-                var password    = $('#login_password').val(); 
-                firebase.auth().signInWithEmailAndPassword(email, password).then(login_success_func).catch(login_error_func);
-                
-            });            
-        });        
+        var email;
+        var password;      
 
 		function toggle_login() {
         	var provider = new firebase.auth.FacebookAuthProvider();
@@ -80,35 +38,34 @@
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             currentUserId = user.uid;
-            userName = user.displayName;
-            
+       		userName = user.displayName;
+            email = user.email;
+
+            Database.ref('users/' + currentUserId).set({
+    			'username': userName,
+    			'userid': currentUserId,    				
+    			'email': email
+    			
+  			});
             window.location.replace('http://localhost:3000/gamelobby');
             
         } else {
             currentUserId = null;
             userName = null;
-            userImage = null;
+            
             
             //listeningFirebaseRefs = [];
         }
     });
 
+   	
 		
 
 	</script>
 
-	<h4>註冊使用者帳號</h4>
-    <input type="text" id="create_email"     placeholder="Email"/>
-    <input type="password" id="create_password"  placeholder="密碼"/>
-    <button id="create_user">註冊登入</button>
-  
-    <h4>登入使用者帳號</h4>
-    <input type="text" id="login_email"     placeholder="Email"/>
-    <input type="password" id="login_password"  placeholder="密碼"/>
-    <button id="login_user" >登入</button> </br> 
-
 	
-	<button id="fb-login-button" onclick="toggle_login()">Login with Facebook</button>
+	
+	<h4><button id="fb-login-button" onclick="toggle_login()">Login with Facebook</button></h4>
 
 	
 

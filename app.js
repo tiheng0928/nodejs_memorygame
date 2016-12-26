@@ -2,28 +2,29 @@ var express  = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
-var room = {playernum: 0, enter_id: 0}
+var room = {playernum: 0, enter_id: 0};
+var session = require('express-session');
 
 
 app.set('view engine', 'ejs' );
 app.set('port', (process.env.PORT || 3000));
 app.use(express.static('public'));
-//­º­¶
+
 
 app.get('/', function(req, res){
 	
 	res.render('pages/index.ejs');
 });
 
-//gaming­¶
+//gaming頁面
 app.get('/gaming', function(req, res){
-	//¶i¤Jplay­¶
+	//進入gaming頁面
 	res.render('pages/gaming');
 });
 
-//gaming­¶
+//遊戲大廳
 app.get('/gamelobby', function(req, res){
-	//¶i¤Jgaming­¶
+	//進入遊戲大廳
 	res.render('pages/gamelobby.ejs');
 });
 
@@ -34,7 +35,7 @@ io.on('connection', function(socket) {
 	socket.on('player entered', function(playername) {
 		socket.playername = playername;
 		console.log("New Player:"+playername.name+" Entered.");
-		//±Nplayer¦s¤Jfirbase
+		//輸入名字
 	});
 	socket.emit('set_enter_id',{enter_id:room.enter_id});
 	console.log(room.enter_id);
