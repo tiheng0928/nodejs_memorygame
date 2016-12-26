@@ -3,23 +3,17 @@
 <head>
 	<% include ../partials/head %>
 	<meta charset=utf-8 /> 	
-	<script src="//connect.facebook.net/en_US/sdk.js"></script>
-	<script>
-  		FB.init({
-    		/**********************************************************************
-    		 * TODO(Developer): Change the value below with your Facebook app ID. *
-     		**********************************************************************/
-    	appId      : '223945271385893',
-    	status     : true,
-    	xfbml      : true,
-    	version    : 'v2.8'
-  	});
-	</script>
+	
 </head>
 <body>
-	FB.Event.subscribe('auth.authResponseChange', checkLoginState);
+	
 	
 	<script>
+
+		var currentUserId;
+        var userName;
+        var userImage;
+
 		/* Handle 建立使用者方法 */
         var create_error_func = function(error) {
                   var errorCode     = error.code;
@@ -28,8 +22,8 @@
                   window.location.replace("http://localhost:3000/");  
         }
         var create_success_func = function(error) {
-                  alert("註冊成功");
-                  window.location.replace("http://localhost:3000/");  
+                  alert("註冊成功，即將進入遊戲大廳");
+                  window.location.replace("http://localhost:3000/gamelobby");  
         }        
         
         
@@ -63,84 +57,58 @@
             });            
         });        
 
-		
-		
-		FB.Event.subscribe('auth.authResponseChange', checkLoginState);
+		function toggle_login() {
+        	var provider = new firebase.auth.FacebookAuthProvider();
+        	firebase.auth().signInWithPopup(provider).then(function (result) {
+            	var token = result.credential.accessToken;
+            	var user = result.user;
+            	provider.setCustomParameters({
+  					'display': 'popup'
+				});
 
-		function checkLoginState(event) {
-  			if (event.authResponse) {
-    			// User is signed-in Facebook.
-    			var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
-      				unsubscribe();
-      				// Check if we are already signed-in Firebase with the correct user.
-      				if (!isUserEqual(event.authResponse, firebaseUser)) {
-        				// Build Firebase credential with the Facebook auth token.
-        				var credential = firebase.auth.FacebookAuthProvider.credential(event.authResponse.accessToken);
-        				// Sign in with the credential from the Facebook user.
-        				firebase.auth().signInWithCredential(credential).catch(function(error) {
-          					// Handle Errors here.
-          					var errorCode = error.code;
-          					var errorMessage = error.message;
-          					// The email of the user's account used.
-          					var email = error.email;
-          					// The firebase.auth.AuthCredential type that was used.
-          					var credential = error.credential;
-          					// ...
-        				});
-      				} else {
-        			// User is already signed-in Firebase with the correct user.
-        			//window.location('http://localhost:3000/gamelobby');
-      				}
-    			});
-  			} else {
-    			// User is signed-out of Facebook.
-    			firebase.auth().signOut();
-    			//window.location('http://localhost:3000/');
-  			}
-		}
+            }).catch(function (error) {
+            	var errorCode = error.code;
+            	var errorMessage = error.message;
+            	var email = error.email;
+            	var credential = error.credential;
+            	console.log(errorCode);
+        	});
 
-		function isUserEqual(facebookAuthResponse, firebaseUser) {
-  			if (firebaseUser) {
-    			var providerData = firebaseUser.providerData;
-    			for (var i = 0; i < providerData.length; i++) {
-      				if (providerData[i].providerId === firebase.auth.FacebookAuthProvider.PROVIDER_ID &&
-          			providerData[i].uid === facebookAuthResponse.userID) {
-       					// We don't need to re-auth the Firebase connection.
-        				return true;
-      				}
-    			}
-  			}
-  			return false;
-		}
+            //window.location.replace("http://localhost:3000/gamelobby"); 
+    };
+        
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            currentUserId = user.uid;
+            userName = user.displayName;
+            
+            window.location.replace('http://localhost:3000/gamelobby');
+            
+        } else {
+            currentUserId = null;
+            userName = null;
+            userImage = null;
+            
+            //listeningFirebaseRefs = [];
+        }
+    });
 
-		var credential = firebase.auth.FacebookAuthProvider.credential(access_token);
-
-		// Sign in with credential from the Google user.
-		firebase.auth().signInWithCredential(credential).catch(function(error) {
-  			// Handle Errors here.
-  			var errorCode = error.code;
-  			var errorMessage = error.message;
-  			// The email of the user's account used.
-  			var email = error.email;
-  			// The firebase.auth.AuthCredential type that was used.
-  			var credential = error.credential;
-  			// ...
-		});
 		
 
 	</script>
+
 	<h4>註冊使用者帳號</h4>
     <input type="text" id="create_email"     placeholder="Email"/>
-    <input type="text" id="create_password"  placeholder="密碼"/>
-    <button id="create_user">註冊</button>
+    <input type="password" id="create_password"  placeholder="密碼"/>
+    <button id="create_user">註冊登入</button>
   
     <h4>登入使用者帳號</h4>
     <input type="text" id="login_email"     placeholder="Email"/>
-    <input type="text" id="login_password"  placeholder="密碼"/>
+    <input type="password" id="login_password"  placeholder="密碼"/>
     <button id="login_user" >登入</button> </br> 
 
-	<fb:login-button data-auto-logout-link="true" scope="public_profile,email" size="large" onclick='signInWithPopup()'></fb:login-button>
-	<!--<button class="fb-login-button" onclick='toggleSignInFB()'>Login with Facebook</button>-->
+	
+	<button id="fb-login-button" onclick="toggle_login()">Login with Facebook</button>
 
 	
 
