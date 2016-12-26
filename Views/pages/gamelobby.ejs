@@ -12,6 +12,7 @@
        	var	userName;
         var email;
 		
+
 		firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             currentUserId = user.uid;
