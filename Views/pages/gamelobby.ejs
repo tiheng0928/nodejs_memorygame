@@ -8,6 +8,23 @@
 		var socket = io.connect();
 		var joined_player;
 		var enter_id;
+		var currentUserId;
+       	var	userName;
+        var email;
+		
+		firebase.auth().onAuthStateChanged(function (user) {
+	        if (user) {
+	            currentUserId = user.uid;
+	       		userName = user.displayName;
+	            email = user.email;
+	            console.log(userName);
+	            console.log(currentUserId);
+	        }
+        	else{
+        		window.location.replace('http://localhost:3000/');
+        	}
+    });
+
 	</script>
 </head>
 
@@ -25,15 +42,14 @@
 					<li><img src="image/player.png" id="player_4"></li>
 					<div class="clear"></div>
 					<input type="checkbox" id="join"><button type="submit" class="join_disable" disabled="disabled">房間已滿!</button><br>
-					<a href="room.html"><button type="submit" id="play_btn" class="play" disabled="disabled">Play!</button></a>
+					<a href="/gaming"><button type="submit" id="play_btn" class="play" disabled="disabled">Play!</button></a>
 				</div>
 
 				<script>
 
 					$( document ).on( "click", "#join", function(){
 							if($("#join").prop("checked")){
-								socket.emit('player_num_plus');
-								console.log('click');			
+								socket.emit('player_num_plus');			
 							}
 							else{
 								socket.emit('player_num_del');
@@ -94,7 +110,7 @@
 						}
 					});
 
-					socket.on('empty_result',function(room){
+					socket.on('empty_result',function(){
 						if(enter_id == 1){
 							$("#play_btn").attr("disabled","disabled");
 						}
@@ -107,7 +123,31 @@
 				</script>
 			</div>
 			<div class="msg_area">
+				
 				<h2>目前在線人數: 1人</h2>
+				<script>
+					if(currentUserId != null){
+						console.log('opppppsssss');
+						firebase.database().ref('/users/'+currentUserId).on('value', function(snapshot) {
+	        			console.log(snapshot.val());
+	        			$('.msg_area').append('<p>'+ snapshot.userName + '已上線</p>');
+						//document.write('<h3>歡迎回來' + snapshot.userName + '</h3>');
+						});
+					}
+					else{
+						firebase.auth().onAuthStateChanged(function (user) {
+	        				if (user) {
+	            				currentUserId = user.uid;
+	       						userName = user.displayName;
+	            				email = user.email;
+	            				console.log(userName);
+	            				console.log(currentUserId);
+	        				};
+							console.log('MFC');
+						});
+					}	
+				</script>
+
 		</div>
 	</div>
 </body>

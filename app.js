@@ -2,28 +2,29 @@ var express  = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
-var room = {playernum: 0, enter_id: 0}
+var room = {playernum: 0, enter_id: 0};
+var session = require('express-session');
 
 
 app.set('view engine', 'ejs' );
 app.set('port', (process.env.PORT || 3000));
 app.use(express.static('public'));
-//­º­¶
+
 
 app.get('/', function(req, res){
 	
 	res.render('pages/index.ejs');
 });
 
-//play­¶
-app.get('/play', function(req, res){
-	//¶i¤Jplay­¶
-	res.render('pages/play');
+//gaming頁面
+app.get('/gaming', function(req, res){
+	//進入gaming頁面
+	res.render('pages/gaming');
 });
 
-//gaming­¶
+//遊戲大廳
 app.get('/gamelobby', function(req, res){
-	//¶i¤Jgaming­¶
+	//進入遊戲大廳
 	res.render('pages/gamelobby.ejs');
 });
 
@@ -34,7 +35,7 @@ io.on('connection', function(socket) {
 	socket.on('player entered', function(playername) {
 		socket.playername = playername;
 		console.log("New Player:"+playername.name+" Entered.");
-		//±Nplayer¦s¤Jfirbase
+		//輸入名字
 	});
 	socket.emit('set_enter_id',{enter_id:room.enter_id});
 	console.log(room.enter_id);
@@ -61,18 +62,17 @@ io.on('connection', function(socket) {
 			io.sockets.emit('empty_result');
 		}
 	});
+	socket.on('disconnect', function() {
+		console.log('socket disconnected');
+		//if(room.enter_id == 1){
+			//room.playernum--;
+		//}
+		//console.log(room.playernum);
+	});
 });
 
-io.on('disconnect', function(socket) {
-	console.log('socket disconnected');
-	if(room.enter_id == 1){
-		room.playernum--;
-	}
-	console.log(room.playernum);
-});
+
 
 var server = server.listen(app.get('port'), function(){
 	console.log('Start server on port 3000:');
 });
-
-
