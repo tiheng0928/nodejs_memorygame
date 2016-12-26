@@ -62,18 +62,17 @@ io.on('connection', function(socket) {
 			io.sockets.emit('empty_result');
 		}
 	});
+	socket.on('disconnect', function() {
+		console.log('socket disconnected');
+		//if(room.enter_id == 1){
+			//room.playernum--;
+		//}
+		//console.log(room.playernum);
+	});
 });
 
-io.on('disconnect', function(socket) {
-	console.log('socket disconnected');
-	if(room.enter_id == 1){
-		room.playernum--;
-	}
-	console.log(room.playernum);
-});
+
 
 var server = server.listen(app.get('port'), function(){
 	console.log('Start server on port 3000:');
 });
-
-
