@@ -11,7 +11,9 @@
 		var currentUserId;
        	var	userName;
         var email;
-		
+		var player_id;
+		var turn_id;
+		var now_turn;
 
 		firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
@@ -40,7 +42,7 @@
 					<li><img src="image/player.png" id="player_4"></li>
 					<div class="clear"></div>
 					<input type="checkbox" id="join"><button type="submit" class="join_disable" disabled="disabled">房間已滿!</button><br>
-					<a href="/gaming"><button type="submit" id="play_btn" class="play" disabled="disabled">Play!</button></a>
+					<button type="submit" id="play_btn" class="play" disabled="disabled">Play!</button>
 				</div>
 
 				<script>
@@ -121,6 +123,67 @@
 					});
 				</script>
 			</div>
+
+			<script>
+				$('#play_btn').click(function(){
+					$('.room_area').hide();
+					$('.game_area').show();
+					socket.emit('get_id');
+					socket.on('give_id',function(room){
+						player_id = room.player_id;
+						console.log('player_id:'+player_id);
+					});
+				});
+
+				socket.on('set_turn_id',function(room){
+					turn_id = room.turn_id;
+					console.log('現在排隊號碼是:'+turn_id);
+				});
+
+				$("#game_btn").click(function(){
+					console.log('click!!!!');
+				});
+
+				socket.on('check_turn_id',function(room){
+					turn_id = room.turn_id;
+					now_turn = turn_id%4;
+					console.log(now_turn);
+					if(player_id == now_turn){
+						$('.wait').hide();
+						console.log('1');
+					}
+					else{
+						$('.wait').show();
+						console.log('2');
+					}
+				});
+			</script>
+
+			<div class="game_area">
+				<div class="game">
+					<ul>
+						<li><button class='button' id='game_btn' value='1'>1</button></li>
+						<li><button class='button' id='game_btn' value='2'>2</button></li>
+						<li><button class='button' id='game_btn' value='3'>3</button></li>
+					</ul>
+					<ul id="456" style="list-style:none;float:left;">
+						<li><button class='button' id='game_btn' value='4'>4</button></li>
+						<li><button class='button' id='game_btn' value='5'>5</button></li>
+						<li><button class='button' id='game_btn' value='6'>6</button></li>
+					</ul>
+					<ul>
+						<li><button class='button' id='game_btn' value='7'>7</button></li>
+						<li><button class='button' id='game_btn' value='8'>8</button></li>
+						<li><button class='button' id='game_btn' value='9'>9</button></li>
+					</ul>
+				</div>
+				<div class="wait">
+					<p>還沒輪到你~</p>
+				</div>
+			</div>
+			<script>
+				
+			</script>
 			<div class="msg_area">
 				
 				<h2>目前在線人數: 1人</h2>

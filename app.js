@@ -2,7 +2,7 @@ var express  = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
-var room = {playernum: 0, enter_id: 0};
+var room = {playernum: 0, enter_id: 0, player_id:0, turn_id:0};
 var session = require('express-session');
 
 
@@ -51,7 +51,7 @@ io.on('connection', function(socket) {
 		}
 	});
 	
-	socket.on('player_num_del',function(playernum) {
+	socket.on('player_num_del',function() {
 		socket.room = room;
 		room.playernum--;
 		room.enter_id = 0;
@@ -62,6 +62,26 @@ io.on('connection', function(socket) {
 			io.sockets.emit('empty_result');
 		}
 	});
+
+	socket.on('get_id',function(){
+		socket.room = room;
+		console.log("Give id:"+room.player_id);
+		socket.emit('give_id',{player_id:room.player_id});
+		room.player_id++;
+		io.sockets.emit('check_turn_id',{turn_id:room.turn_id});
+		console.log("Next id:"+room.player_id);
+	});
+
+	io.sockets.emit('set_turn_id',{turn_id:room.turn_id});
+	
+	socket.on('add_turn',function(){
+		socket.room = room;	
+		room.turn_id++;
+		io.sockets.emit('set_turn_id',{turn_id:room.turn_id});
+		console.log("Now turn:"+room.turn_id);
+		io.sockets.emit('check_turn_id',{turn_id:room.turn_id});
+	});
+
 	socket.on('disconnect', function() {
 		console.log('socket disconnected');
 		//if(room.enter_id == 1){

@@ -1,0 +1,16 @@
+h4{
+	width: 300px;
+	margin:auto;
+}
+#fb-login-button{
+	text-align: center;
+	background: #3b5998;
+	color: #fff;
+	border: none;
+	font-size: 18px;
+	line-height: 30px;
+	width: 300px;
+	border-radius: 5px;
+	margin-top: 20px;
+	cursor: pointer;
+}
