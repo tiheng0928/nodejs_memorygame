@@ -1,3 +1,6 @@
+//導入模組
+var path = require('path');
+
 var express  = require('express');
 var app = express();
 var server = require('http').createServer(app);
@@ -15,26 +18,27 @@ var config = {
 };
 firebase.initializeApp(config);
 
-app.set('view engine', 'ejs' );
-app.set('port', (process.env.PORT || 3000));
+//var page = require('./views/page');	//設定路由
+
+//app.use(partials());
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 app.use(express.static('public'));
+
+app.set('port', (process.env.PORT || 3000));
+
 
 app.get('/', function(req, res){
 	
 	res.render('pages/index');
 });
 
-//gaming頁面
-app.get('/gaming', function(req, res){
-	//進入gaming頁面
-	res.render('pages/gaming');
-});
-
-//遊戲大廳
 app.get('/gamelobby', function(req, res){
 	//進入遊戲大廳
 	res.render('pages/gamelobby');
 });
+
+
 
 //socket
 io.on('connection', function(socket) {
