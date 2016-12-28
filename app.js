@@ -18,9 +18,9 @@ var config = {
 };
 firebase.initializeApp(config);
 
-//var page = require('./views/page');	//設定路由
+var page = require('./routes/page');	//設定路由
 
-//app.use(partials());
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -28,15 +28,19 @@ app.use(express.static('public'));
 app.set('port', (process.env.PORT || 3000));
 
 
-app.get('/app/', function(req, res){
+/*
+app.get('/', function(req, res){
 	
 	res.render('pages/index');
 });
 
-app.get('/app/gamelobby', function(req, res){
+app.get('/gamelobby', function(req, res){
 	//進入遊戲大廳
 	res.render('pages/gamelobby');
 });
+*/
+app.get('/', page.index);
+app.get('/gamelobby', page.gamelobby);
 
 
 
