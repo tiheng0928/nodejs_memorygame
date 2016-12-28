@@ -22,7 +22,7 @@ app.use(express.static('public'));
 
 app.get('/', function(req, res){
 	
-	res.sendfile(__dirname + 'pages/index.ejs');
+	res.sendfile(__dirname + 'Views/pages/index.ejs');
 });
 
 //gaming頁面
