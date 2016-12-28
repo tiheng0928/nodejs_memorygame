@@ -28,17 +28,7 @@ app.use(express.static('public'));
 app.set('port', (process.env.PORT || 3000));
 
 
-/*
-app.get('/', function(req, res){
-	
-	res.render('pages/index');
-});
 
-app.get('/gamelobby', function(req, res){
-	//進入遊戲大廳
-	res.render('pages/gamelobby');
-});
-*/
 app.get('/', page.index);
 app.get('/gamelobby', page.gamelobby);
 
