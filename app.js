@@ -5,11 +5,19 @@ var io = require('socket.io').listen(server);
 var room = {playernum: 0, enter_id: 0, player_id:0, turn_id:0};
 var session = require('express-session');
 
+// Initialize Firebase
+var config = {
+	apiKey: "AIzaSyASoh2OjHgNFAfu_UI7rT1sa3NKui-3D7E",
+    authDomain: "pokergame-407e6.firebaseapp.com",
+    databaseURL: "https://pokergame-407e6.firebaseio.com",
+    storageBucket: "pokergame-407e6.appspot.com",
+    messagingSenderId: "190173330964"
+};
+firebase.initializeApp(config);
 
 app.set('view engine', 'ejs' );
 app.set('port', (process.env.PORT || 3000));
 app.use(express.static('public'));
-
 
 app.get('/', function(req, res){
 	
