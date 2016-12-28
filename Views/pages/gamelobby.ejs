@@ -139,7 +139,7 @@
 					<ul>
 						<li><button class='button' id='game_btn7' value='7'>7</button></li>
 						<li><button class='button' id='game_btn8' value='8'>8</button></li>
-						<li><button class='button' id='game_btn9' value='9'>9</button></li>
+						
 					</ul>
 				</div>
 				<div class="wait">
@@ -147,6 +147,14 @@
 				</div>
 			</div>
 			<script>
+				for(var i = 1 ; i <= 8 ; i++) {	
+					Database.ref('Cards/' +i).set({
+						'cards_value': i,
+						'cards_status': true
+					});
+				}
+
+
 				$('#play_btn').click(function(){
 					$('.room_area').hide();
 					$('.game_area').show();
