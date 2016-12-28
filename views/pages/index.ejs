@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<% include ../partials/head %>
+    <link rel="stylesheet" href="CSS/index.css">
+	<meta charset=utf-8 /> 	
+	
+</head>
+<body>
+	
+	
+	<script>
+
+		var currentUserId;
+        var userName;
+        var email;
+        var password;      
+
+		function toggle_login() {
+        	var provider = new firebase.auth.FacebookAuthProvider();
+        	firebase.auth().signInWithPopup(provider).then(function (result) {
+            	var token = result.credential.accessToken;
+            	var user = result.user;
+            	provider.setCustomParameters({
+  					'display': 'popup'
+				});
+
+            }).catch(function (error) {
+            	var errorCode = error.code;
+            	var errorMessage = error.message;
+            	var email = error.email;
+            	var credential = error.credential;
+            	console.log(errorCode);
+        	});
+
+            //window.location.replace("http://localhost:3000/gamelobby"); 
+    };
+        
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            currentUserId = user.uid;
+       		userName = user.displayName;
+            email = user.email;
+
+            Database.ref('users/' + currentUserId).set({
+    			'username': userName,
+    			'userid': currentUserId,    				
+    			'email': email
+    			
+  			});
+            window.location.replace('http://localhost:3000/gamelobby');
+            
+        } else {
+            currentUserId = null;
+            userName = null;
+            
+            
+            //listeningFirebaseRefs = [];
+        }
+    });
+
+   	
+		
+
+	</script>
+
+	
+	
+	<h4><button id="fb-login-button" onclick="toggle_login()">Login with Facebook</button></h4>
+
+	
+
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<% include ../partials/head %>
+	<title>遊戲大廳</title>
+	<script>
+		var socket = io.connect();
+		var joined_player;
+		var enter_id;
+		var currentUserId;
+       	var	userName;
+        var email;
+		var player_id;
+		var turn_id;
+		var now_turn;
+
+		firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            currentUserId = user.uid;
+       		userName = user.displayName;
+            email = user.email;
+            console.log(userName);
+            console.log(currentUserId);
+        }
+    });
+
+	</script>
+</head>
+
+<body>
+	<div class="wrap">
+		<div class="header">
+			<h1>遊戲大廳</h1>
+		</div>
+		<div class="content">
+			<div class="room_area">
+				<div class="room">
+					<li><img src="image/player.png" id="player_1"></li>
+					<li><img src="image/player.png" id="player_2"></li>
+					<li><img src="image/player.png" id="player_3"></li>
+					<li><img src="image/player.png" id="player_4"></li>
+					<div class="clear"></div>
+					<input type="checkbox" id="join"><button type="submit" class="join_disable" disabled="disabled">房間已滿!</button><br>
+					<button type="submit" id="play_btn" class="play" disabled="disabled">Play!</button>
+				</div>
+
+				<script>
+
+					$( document ).on( "click", "#join", function(){
+							if($("#join").prop("checked")){
+								socket.emit('player_num_plus');
+								console.log('click');			
+							}
+							else{
+								socket.emit('player_num_del');
+							}
+					});	
+						
+					socket.on('check_player_num',function(room){
+							joined_player = room.playernum;
+							switch(room.playernum){
+								case 0:
+									$("#player_1").attr("src","image/player.png");
+									$("#player_2").attr("src","image/player.png");
+									$("#player_3").attr("src","image/player.png")
+									$("#player_4").attr("src","image/player.png")
+									console.log('case0');
+									break;
+								case 1:
+									$("#player_1").attr("src","image/player_joined.png");
+									$("#player_2").attr("src","image/player.png");
+									$("#player_3").attr("src","image/player.png")
+									$("#player_4").attr("src","image/player.png")
+									console.log('case1');
+									break;
+								case 2:
+									$("#player_1").attr("src","image/player_joined.png");
+									$("#player_2").attr("src","image/player_joined.png");
+									$("#player_3").attr("src","image/player.png")
+									$("#player_4").attr("src","image/player.png")
+									console.log('case2');
+									break;
+								case 3:
+									$("#player_1").attr("src","image/player_joined.png");
+									$("#player_2").attr("src","image/player_joined.png");
+									$("#player_3").attr("src","image/player_joined.png")
+									$("#player_4").attr("src","image/player.png")
+									console.log('case3');
+									break;
+								case 4:
+									$("#player_1").attr("src","image/player_joined.png")
+									$("#player_2").attr("src","image/player_joined.png")
+									$("#player_3").attr("src","image/player_joined.png")
+									$("#player_4").attr("src","image/player_joined.png")
+									console.log('case4');
+									break;					
+							}
+					});//End
+					socket.on('set_enter_id',function(room){
+						enter_id = room.enter_id;
+					});
+					socket.on('full_result',function(){
+						if(enter_id == 1){
+							document.getElementById("play_btn").disabled = false;
+						}
+						else{
+							$("#join").hide();
+							$(".join_disable").show();
+							$("#play_btn").attr("disabled","disabled");
+						}
+					});
+
+					socket.on('empty_result',function(room){
+						if(enter_id == 1){
+							$("#play_btn").attr("disabled","disabled");
+						}
+						else{
+							$("#join").show();
+							$(".join_disable").hide();
+							$("#play_btn").attr("disabled","disabled");						
+						}
+					});
+				</script>
+			</div>
+
+			<div class="game_area">
+				<div class="game">
+					<ul>
+						<li><button class='button' id='game_btn1' value='1'>1</button></li>
+						<li><button class='button' id='game_btn2' value='2'>2</button></li>
+						<li><button class='button' id='game_btn3' value='3'>3</button></li>
+					</ul>
+					<ul id="456" style="list-style:none;float:left;">
+						<li><button class='button' id='game_btn4' value='4'>4</button></li>
+						<li><button class='button' id='game_btn5' value='5'>5</button></li>
+						<li><button class='button' id='game_btn6' value='6'>6</button></li>
+					</ul>
+					<ul>
+						<li><button class='button' id='game_btn7' value='7'>7</button></li>
+						<li><button class='button' id='game_btn8' value='8'>8</button></li>
+						
+					</ul>
+				</div>
+				<div class="wait">
+					<p>還沒輪到你~</p>
+				</div>
+			</div>
+			<script>
+				for(var i = 1 ; i <= 8 ; i++) {	
+					Database.ref('Cards/' +i).set({
+						'cards_value': i,
+						'cards_status': true
+					});
+				}
+
+
+				$('#play_btn').click(function(){
+					$('.room_area').hide();
+					$('.game_area').show();
+					socket.emit('get_id');
+					socket.on('give_id',function(room){
+						player_id = room.player_id;
+						console.log('player_id:'+player_id);
+					});
+				});
+
+				socket.on('set_turn_id',function(room){
+					turn_id = room.turn_id;
+					console.log('現在排隊號碼是:'+turn_id);
+				});
+
+				$(".button").click(function(){
+					console.log('click!!!!');
+					socket.emit('add_turn');
+				});
+
+				socket.on('check_turn_id',function(room){
+					turn_id = room.turn_id;
+					now_turn = turn_id%4;
+					console.log(now_turn);
+					if(player_id == now_turn){
+						$('.wait').hide();
+						console.log('1');
+					}
+					else{
+						$('.wait').show();
+						console.log('2');
+					}
+				});
+			</script>
+			<div class="msg_area">
+				
+				<h2>目前在線人數: 1人</h2>
+				<script>
+					console.log('helloooo');
+					Database.ref('users/' + currentUserId).on('value', function(snapshot) {
+        			console.log(snapshot.val());
+        			$('.msg_area').append('<p>歡迎回來：'+ snapshot.userName + '</p>');
+					//document.write('<h3>歡迎回來' + snapshot.userName + '</h3>');
+				});
+					console.log('opppppsssss');
+				</script>
+
+		</div>
+	</div>
+</body>
+</html>
