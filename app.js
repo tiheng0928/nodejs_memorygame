@@ -22,19 +22,19 @@ app.use(express.static('public'));
 
 app.get('/', function(req, res){
 	
-	res.sendfile(__dirname + 'Views/pages/index.ejs');
+	res.sendFile(__dirname + 'pages/index.ejs');
 });
 
 //gaming頁面
 app.get('/gaming', function(req, res){
 	//進入gaming頁面
-	res.sendfile(__dirname + 'pages/gaming');
+	res.sendFile(__dirname + 'pages/gaming');
 });
 
 //遊戲大廳
 app.get('/gamelobby', function(req, res){
 	//進入遊戲大廳
-	res.sendfile(__dirname + 'pages/gamelobby.ejs');
+	res.sendFile(__dirname + 'pages/gamelobby.ejs');
 });
 
 //socket
