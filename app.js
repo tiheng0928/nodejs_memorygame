@@ -3,7 +3,6 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var room = {playernum: 0, enter_id: 0, player_id:0, turn_id:0};
-var session = require('express-session');
 var firebase = require("firebase");
 
 // Initialize Firebase
@@ -22,19 +21,19 @@ app.use(express.static('public'));
 
 app.get('/', function(req, res){
 	
-	res.sendFile('/index.ejs');
+	res.render('pages/index.ejs');
 });
 
 //gaming頁面
 app.get('/gaming', function(req, res){
 	//進入gaming頁面
-	res.sendFile('/gaming');
+	res.render('pages/gaming.ejs');
 });
 
 //遊戲大廳
 app.get('/gamelobby', function(req, res){
 	//進入遊戲大廳
-	res.sendFile('/gamelobby.ejs');
+	res.render('pages/gamelobby.ejs');
 });
 
 //socket
