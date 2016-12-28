@@ -4,6 +4,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var room = {playernum: 0, enter_id: 0, player_id:0, turn_id:0};
 var session = require('express-session');
+var firebase = require("firebase");
 
 // Initialize Firebase
 var config = {
