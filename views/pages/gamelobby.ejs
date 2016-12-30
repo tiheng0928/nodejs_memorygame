@@ -229,7 +229,7 @@
 					console.log('helloooo');
 					Database.ref('users/' + currentUserId).on('value', function(snapshot) {
         			console.log(snapshot.val());
-        			$('.msg_area').append('<p>歡迎回來：'+ snapshot.userName + '</p>');
+        			//$('.msg_area').append('<p>歡迎回來：'+ snapshot.userName + '</p>');
 					//document.write('<h3>歡迎回來' + snapshot.userName + '</h3>');
 				});
 					console.log('opppppsssss');
