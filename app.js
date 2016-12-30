@@ -94,6 +94,14 @@ io.on('connection', function(socket) {
 		//console.log(room.playernum);
 	});
 
+	socket.on('same_value_a', function() {
+		io.sockets.emit('same_value_b');
+	});
+
+	socket.on('different_value', function() {
+		io.sockets.emit('different_value');
+	});
+
 	
 });
 

@@ -152,23 +152,62 @@
 			</div>
 			<script>
 				//紀錄8張牌的值以及其狀態
+				/*
 				for(var i = 1 ; i <= 8 ; i++) {	
 					Database.ref('Cards/' +i).set({
 						'cards_value': i,
 						'cards_status': true
 					});
 				}
+				*/
 
 
 				function reply_clickid(clicked_id){
-					console.log('this is clicked_id:' +clicked_id);
+					console.log('clicked_id:' +clicked_id);
 					buttonid[PK] = clicked_id;
+					console.log('this is buttonid: '+buttonid)
 
-					firebase.database().ref('Cards/'+buttonid).once('value').then(function(snapshot) {
-							buttonval[PK] = snapshot.val().cards_value;
-							console.log('this is buttonval: ' +buttonval);
-						});
-					PK++;
+					firebase.database().ref('Cards/'+clicked_id).on('value', function(snapshot) {
+						buttonval[PK] = snapshot.val().cards_value;
+						console.log('this is buttonval: ' +buttonval);
+						console.log('PK: '+PK);
+						//判斷玩家點兩下之後換人
+						clickcount++;
+						console.log('click!!!!');
+						if(clickcount==2){
+							//判斷牌的value是否一樣
+							if(buttonval[0] == buttonval[1]) {
+								//通知所有玩家，並將牌disable，此玩家繼續
+								socket.emit('same_value_a');
+								socket.on('same_value_b',function() {
+									console.log('翻出的牌為'+buttonid[0]+'號牌: '+buttonval[0]+' & '+buttonid[1]+'號牌: '+buttonval[1]);
+									console.log('牌值相同，玩家繼續.');
+									buttonid = [];
+									buttonval = [];
+									clickcount = 0;
+									PK = 0;
+								});
+								
+							}else if(buttonval[0] != buttonval[1]) {
+								//通知所有玩家，牌的狀態不變，玩家換人
+								socket.emit('different_value');
+								socket.on('different_value',function() {
+									console.log('翻出的牌為'+buttonid[0]+'號牌: '+buttonval[0]+' & '+buttonid[1]+'號牌: '+buttonval[1]);
+									console.log('牌值不同，換人翻牌.');
+									buttonid = [];
+									buttonval = [];
+									clickcount = 0;
+									PK = 0;
+									socket.emit('add_turn');
+								});							
+								
+							}
+							
+						}
+						PK++;
+							
+					});
+					
 				}
 
 				
@@ -191,6 +230,7 @@
 				});
 
 				//判斷玩家點兩下之後換人
+				/*
 				$(".button").click(function(){
 					clickcount++;
 					console.log('click!!!!');
@@ -202,6 +242,7 @@
 						socket.emit('add_turn');
 					}
 				});
+				*/
 
 				
 				
