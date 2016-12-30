@@ -32,8 +32,6 @@ app.set('port', (process.env.PORT || 3000));
 app.get('/', page.index);
 app.get('/gamelobby', page.gamelobby);
 
-
-
 //socket
 io.on('connection', function(socket) {
 	console.log('socket connected');
@@ -95,6 +93,8 @@ io.on('connection', function(socket) {
 		//}
 		//console.log(room.playernum);
 	});
+
+	
 });
 
 

@@ -14,6 +14,10 @@
 		var player_id;
 		var turn_id;
 		var now_turn;
+		var buttonid = new Array(); //藉由buttonid去DB抓值用
+		var buttonval = new Array();//藉由buttonid去DB抓值用
+		var clickcount = 0;
+		var PK = 0;
 
 		firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
@@ -127,18 +131,18 @@
 			<div class="game_area">
 				<div class="game">
 					<ul>
-						<li><button class='button' id='game_btn1' value='1'>1</button></li>
-						<li><button class='button' id='game_btn2' value='2'>2</button></li>
-						<li><button class='button' id='game_btn3' value='3'>3</button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='1' value='1'>1</button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='2' value='2'>2</button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='3' value='3'>3</button></li>
 					</ul>
 					<ul id="456" style="list-style:none;float:left;">
-						<li><button class='button' id='game_btn4' value='4'>4</button></li>
-						<li><button class='button' id='game_btn5' value='5'>5</button></li>
-						<li><button class='button' id='game_btn6' value='6'>6</button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='4' value='4'>4</button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='5' value='5'>5</button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='6' value='6'>6</button></li>
 					</ul>
 					<ul>
-						<li><button class='button' id='game_btn7' value='7'>7</button></li>
-						<li><button class='button' id='game_btn8' value='8'>8</button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='7' value='7'>7</button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='8' value='8'>8</button></li>
 						
 					</ul>
 				</div>
@@ -147,12 +151,28 @@
 				</div>
 			</div>
 			<script>
+				//紀錄8張牌的值以及其狀態
 				for(var i = 1 ; i <= 8 ; i++) {	
 					Database.ref('Cards/' +i).set({
 						'cards_value': i,
 						'cards_status': true
 					});
 				}
+
+
+				function reply_clickid(clicked_id){
+					console.log('this is clicked_id:' +clicked_id);
+					buttonid[PK] = clicked_id;
+
+					firebase.database().ref('Cards/'+buttonid).once('value').then(function(snapshot) {
+							buttonval[PK] = snapshot.val().cards_value;
+							console.log('this is buttonval: ' +buttonval);
+						});
+					PK++;
+				}
+
+				
+
 
 
 				$('#play_btn').click(function(){
@@ -170,10 +190,23 @@
 					console.log('現在排隊號碼是:'+turn_id);
 				});
 
+				//判斷玩家點兩下之後換人
 				$(".button").click(function(){
+					clickcount++;
 					console.log('click!!!!');
-					socket.emit('add_turn');
+					if(clickcount==4){
+						setTimeout(500);
+						clickcount = 0;
+						console.log('buttonid:'+buttonid);
+						console.log('buttonval:'+buttonval);
+						socket.emit('add_turn');
+					}
 				});
+
+				
+				
+
+				
 
 				socket.on('check_turn_id',function(room){
 					turn_id = room.turn_id;
