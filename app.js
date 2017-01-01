@@ -36,11 +36,6 @@ app.get('/gamelobby', page.gamelobby);
 io.on('connection', function(socket) {
 	console.log('socket connected');
 	
-	socket.on('player entered', function(playername) {
-		socket.playername = playername;
-		console.log("New Player:"+playername.name+" Entered.");
-		//輸入名字
-	});
 	socket.emit('set_enter_id',{enter_id:room.enter_id});
 	console.log(room.enter_id);
 	socket.on('player_num_plus',function() {
@@ -64,6 +59,9 @@ io.on('connection', function(socket) {
 		socket.emit('set_enter_id',{enter_id:room.enter_id});
 		if(room.playernum != 4){
 			io.sockets.emit('empty_result');
+		}
+		else{
+			io.sockets.emit('full_result');
 		}
 	});
 

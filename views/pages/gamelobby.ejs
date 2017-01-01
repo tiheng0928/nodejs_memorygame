@@ -235,26 +235,6 @@
 					console.log('現在排隊號碼是:'+turn_id);
 				});
 
-				//判斷玩家點兩下之後換人
-				/*
-				$(".button").click(function(){
-					clickcount++;
-					console.log('click!!!!');
-					if(clickcount==4){
-						setTimeout(500);
-						clickcount = 0;
-						console.log('buttonid:'+buttonid);
-						console.log('buttonval:'+buttonval);
-						socket.emit('add_turn');
-					}
-				});
-				*/
-
-				
-				
-
-				
-
 				socket.on('check_turn_id',function(room){
 					turn_id = room.turn_id;
 					now_turn = turn_id%4;
