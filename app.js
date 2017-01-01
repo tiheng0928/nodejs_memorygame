@@ -79,7 +79,6 @@ io.on('connection', function(socket) {
 	io.sockets.emit('set_turn_id',{turn_id:room.turn_id});
 	
 	socket.on('add_turn',function(){
-		socket.room = room;	
 		room.turn_id++;
 		io.sockets.emit('set_turn_id',{turn_id:room.turn_id});
 		console.log("Now turn:"+room.turn_id);
@@ -94,14 +93,13 @@ io.on('connection', function(socket) {
 		//console.log(room.playernum);
 	});
 
-	socket.on('same_value_a', function() {
-		io.sockets.emit('same_value_b');
+	socket.on('same_value_a', function(btn_id_1,btn_id_2,btn_val_1,btn_val_2){
+		io.sockets.emit('same_value_b',btn_id_1,btn_id_2,btn_val_1,btn_val_2);
 	});
 
-	socket.on('different_value', function() {
-		io.sockets.emit('different_value');
+	socket.on('different_value', function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {
+		io.sockets.emit('different_value',btn_id_1,btn_id_2,btn_val_1,btn_val_2);
 	});
-
 	
 });
 

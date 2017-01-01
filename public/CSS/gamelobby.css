@@ -1,3 +1,6 @@
+#enter_h1{
+	display: none;
+}
 .room_area{
 	width:70%;
 	height: 100%;
@@ -19,8 +22,8 @@
 	display: none;
 }
 .game{
-	width:300px;
-	height: 300px;
+	width:400px;
+	height: 400px;
 	margin: auto;
 }
 .game ul{
@@ -32,7 +35,7 @@
 	height: 100px;
 	text-align: center;
 }
-#game_btn{
+.button{
 	text-align: center;
 	width: 50px;
 	height: 50px;
@@ -44,8 +47,10 @@
 	background: #fff;
 	font-family: 'Quicksand', sans-serif;
 	cursor: pointer;
+	margin-left: 25px;
+	margin-right: 25px;
 }
-#game_btn:hover{
+.button:hover{
 	color: #fff;
 	background: #202B4C;
 	border: none;

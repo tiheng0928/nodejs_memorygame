@@ -35,7 +35,8 @@
 <body>
 	<div class="wrap">
 		<div class="header">
-			<h1>遊戲大廳</h1>
+			<h1 class="h1">遊戲大廳</h1>
+			<h1 id='enter_h1'>記憶小遊戲</h1>
 		</div>
 		<div class="content">
 			<div class="room_area">
@@ -53,8 +54,7 @@
 
 					$( document ).on( "click", "#join", function(){
 							if($("#join").prop("checked")){
-								socket.emit('player_num_plus');
-								console.log('click');			
+								socket.emit('player_num_plus');		
 							}
 							else{
 								socket.emit('player_num_del');
@@ -131,18 +131,21 @@
 			<div class="game_area">
 				<div class="game">
 					<ul>
-						<li><button onClick="reply_clickid(this.id)" class='button' id='1' value='1'>1</button></li>
-						<li><button onClick="reply_clickid(this.id)" class='button' id='2' value='2'>2</button></li>
-						<li><button onClick="reply_clickid(this.id)" class='button' id='3' value='3'>3</button></li>
-					</ul>
-					<ul id="456" style="list-style:none;float:left;">
-						<li><button onClick="reply_clickid(this.id)" class='button' id='4' value='4'>4</button></li>
-						<li><button onClick="reply_clickid(this.id)" class='button' id='5' value='5'>5</button></li>
-						<li><button onClick="reply_clickid(this.id)" class='button' id='6' value='6'>6</button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='1' value='1'></button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='2' value='2'></button></li>
+						
 					</ul>
 					<ul>
-						<li><button onClick="reply_clickid(this.id)" class='button' id='7' value='7'>7</button></li>
-						<li><button onClick="reply_clickid(this.id)" class='button' id='8' value='8'>8</button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='3' value='3'></button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='4' value='4'></button></li>
+					</ul>
+					<ul>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='5' value='5'></button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='6' value='6'></button></li>
+					</ul>
+					<ul>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='7' value='7'></button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='8' value='8'></button></li>
 						
 					</ul>
 				</div>
@@ -173,50 +176,53 @@
 						console.log('PK: '+PK);
 						//判斷玩家點兩下之後換人
 						clickcount++;
-						console.log('click!!!!');
 						if(clickcount==2){
 							//判斷牌的value是否一樣
 							if(buttonval[0] == buttonval[1]) {
 								//通知所有玩家，並將牌disable，此玩家繼續
-								socket.emit('same_value_a');
-								socket.on('same_value_b',function() {
-									console.log('翻出的牌為'+buttonid[0]+'號牌: '+buttonval[0]+' & '+buttonid[1]+'號牌: '+buttonval[1]);
-									console.log('牌值相同，玩家繼續.');
-									buttonid = [];
-									buttonval = [];
-									clickcount = 0;
-									PK = 0;
-								});
-								
-							}else if(buttonval[0] != buttonval[1]) {
-								//通知所有玩家，牌的狀態不變，玩家換人
-								socket.emit('different_value');
-								socket.on('different_value',function() {
-									console.log('翻出的牌為'+buttonid[0]+'號牌: '+buttonval[0]+' & '+buttonid[1]+'號牌: '+buttonval[1]);
-									console.log('牌值不同，換人翻牌.');
-									buttonid = [];
-									buttonval = [];
-									clickcount = 0;
-									PK = 0;
-									socket.emit('add_turn');
-								});							
-								
+								socket.emit('same_value_a',buttonid[0],buttonid[1],buttonval[0],buttonval[1]);		
 							}
-							
+							else{
+								//通知所有玩家，牌的狀態不變，玩家換人
+								socket.emit('different_value',buttonid[0],buttonid[1],buttonval[0],buttonval[1]);
+								socket.emit('add_turn');													
+							}
 						}
-						PK++;
-							
+						PK++;	
 					});
-					
 				}
 
-				
-
+				socket.on('same_value_b',function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {
+					buttonid[0] = btn_id_1;
+					buttonid[1] = btn_id_2;
+					buttonval[0] = btn_val_1;
+					buttonval[1] = btn_val_2;
+					console.log('翻出的牌為'+buttonid[0]+'號牌: '+buttonval[0]+' & '+buttonid[1]+'號牌: '+buttonval[1]);
+									console.log('牌值相同，玩家繼續.');
+					$('#'+buttonid[0]).attr("disabled","disabled");
+					$('#'+buttonid[0]).html('<p>'+buttonval[0]+'</p>');
+					$('#'+buttonid[1]).attr("disabled","disabled");
+					$('#'+buttonid[1]).html('<p>'+ buttonval[1]+'</p>');
+					buttonid = [];
+					buttonval = [];
+					clickcount = 0;
+					PK = 0;
+				});
+				socket.on('different_value',function() {
+					console.log('翻出的牌為'+buttonid[0]+'號牌: '+buttonval[0]+' & '+buttonid[1]+'號牌: '+buttonval[1]);
+					console.log('牌值不同，換人翻牌.');
+					buttonid = [];
+					buttonval = [];
+					clickcount = 0;
+					PK = 0;
+				});
 
 
 				$('#play_btn').click(function(){
 					$('.room_area').hide();
+					$('.h1').hide();
 					$('.game_area').show();
+					$('#enter_h1').show();
 					socket.emit('get_id');
 					socket.on('give_id',function(room){
 						player_id = room.player_id;
@@ -254,12 +260,10 @@
 					now_turn = turn_id%4;
 					console.log(now_turn);
 					if(player_id == now_turn){
-						$('.wait').hide();
-						console.log('1');
+						$('.wait').fadeOut(500);
 					}
 					else{
-						$('.wait').show();
-						console.log('2');
+						$('.wait').fadeIn(500);
 					}
 				});
 			</script>
@@ -267,13 +271,11 @@
 				
 				<h2>目前在線人數: 1人</h2>
 				<script>
-					console.log('helloooo');
 					Database.ref('users/' + currentUserId).on('value', function(snapshot) {
         			console.log(snapshot.val());
         			//$('.msg_area').append('<p>歡迎回來：'+ snapshot.userName + '</p>');
 					//document.write('<h3>歡迎回來' + snapshot.userName + '</h3>');
 				});
-					console.log('opppppsssss');
 				</script>
 
 		</div>
