@@ -7,6 +7,8 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var room = {playernum: 0, enter_id: 0, player_id:0, turn_id:0};
 var firebase = require("firebase");
+var userID;
+var listplayer = new Array();
 
 // Initialize Firebase
 var config = {
@@ -34,14 +36,25 @@ app.get('/gamelobby', page.gamelobby);
 
 //socket
 io.on('connection', function(socket) {
-	console.log('socket connected');
+	socket.on('add user',function(){
+		console.log('player connected, ID：'+socket.id);
+		userID = socket.id;
+		socket.emit('get_user_id',userID);	
+	})
+	
+
 	
 	socket.emit('set_enter_id',{enter_id:room.enter_id});
 	console.log(room.enter_id);
-	socket.on('player_num_plus',function() {
+	socket.on('player_num_plus',function(plus_data) {
 		socket.room = room;
 		room.playernum++;
 		room.enter_id = 1;
+		listplayer.push(plus_data);
+		console.log(plus_data);
+		for (var i = 0; i < listplayer.length; i++) {
+			console.log(listplayer[i]);
+		}
 		console.log(room.enter_id);
 		io.sockets.emit('check_player_num',{playernum:room.playernum});
 		socket.emit('set_enter_id',{enter_id:room.enter_id});
@@ -84,11 +97,19 @@ io.on('connection', function(socket) {
 	});
 
 	socket.on('disconnect', function() {
-		console.log('socket disconnected');
-		//if(room.enter_id == 1){
-			//room.playernum--;
-		//}
-		//console.log(room.playernum);
+		console.log('socket disconnected :'+ socket.id);
+		console.log('hi');
+		for (var i = 0; i < listplayer.length; i++) {
+			if (listplayer[i] == socket.id) {
+				console.log('yes')
+				room.playernum--;
+				io.sockets.emit('check_player_num',{playernum:room.playernum});
+				if(room.playernum != 4){
+					io.sockets.emit('empty_result');
+				}
+			}
+		}
+	
 	});
 
 	socket.on('same_value_a', function(btn_id_1,btn_id_2,btn_val_1,btn_val_2){

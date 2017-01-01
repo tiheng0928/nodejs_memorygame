@@ -6,6 +6,7 @@
 	<title>遊戲大廳</title>
 	<script>
 		var socket = io.connect();
+		var user_id;
 		var joined_player;
 		var enter_id;
 		var currentUserId;
@@ -54,13 +55,19 @@
 
 					$( document ).on( "click", "#join", function(){
 							if($("#join").prop("checked")){
-								socket.emit('player_num_plus');		
+								console.log(user_id);
+								socket.emit('player_num_plus',user_id);		
 							}
 							else{
 								socket.emit('player_num_del');
 							}
 					});	
-						
+					socket.emit('add user');
+					socket.on('get_user_id',function(userID){
+						console.log(userID);
+						user_id = userID;
+					});
+
 					socket.on('check_player_num',function(room){
 							joined_player = room.playernum;
 							switch(room.playernum){
