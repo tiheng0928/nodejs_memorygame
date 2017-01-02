@@ -181,6 +181,12 @@ button[disabled=disabled]{
 	color: #BCBCBC;
 	cursor: default;
 }
+button[disabled=disabled]:hover{
+	border: 1px solid #BCBCBC;
+	background: #FFF;
+	color: #BCBCBC;
+	cursor: default;
+}
 .msg_area{
 	width: 30%;
 	height: 100%;
@@ -197,6 +203,44 @@ h2{
 	font-weight: 200;
 	margin-bottom: 5px;
 }
-.end{
+.msg_area2{
+	width: 30%;
+	height: 100%;
+	font-size: 20px;
+	float: right;
+	padding-top: 30px;
+	box-sizing: border-box;
 	display: none;
+}
+.msg_area2 p{
+	font-size: 24px;
+	font-weight: 200;
+	margin-bottom: 15px;
+}
+.msg_area2 b{
+	font-weight: 200;
+	margin-bottom: 5px;
+}
+hr{
+	width: 90%;
+	border: 2px solid #7C809B;
+	margin-bottom: 15px;
+}
+.end{
+	margin-top: 20px;
+	display: none;
+	font-size: 20px;
+	background: #fff;
+	cursor: pointer;
+	border-radius: 3px;
+	font-family: 'Noto Sans TC', sans-serif;
+	color: #A9AFD1;
+	border: 1px solid #A9AFD1;
+	line-height: 35px;
+	margin-right: auto;
+	margin-left: auto;
+}
+.end:hover{
+	background: #A9AFD1;
+	color: #fff;
 }

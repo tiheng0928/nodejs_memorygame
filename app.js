@@ -9,6 +9,7 @@ var room = {playernum: 0, enter_id: 0, player_id:0, turn_id:0};
 var firebase = require("firebase");
 var userID;
 var listplayer = new Array();
+var player_point = new Array();
 
 // Initialize Firebase
 var config = {
@@ -42,10 +43,9 @@ io.on('connection', function(socket) {
 		socket.emit('get_user_id',userID);	
 	})
 	
-
-	
 	socket.emit('set_enter_id',{enter_id:room.enter_id});
 	console.log(room.enter_id);
+
 	socket.on('player_num_plus',function(plus_data) {
 		socket.room = room;
 		room.playernum++;
@@ -63,7 +63,7 @@ io.on('connection', function(socket) {
 		}
 	});
 	
-	socket.on('player_num_del',function() {
+	socket.on('player_num_del',function(){
 		socket.room = room;
 		room.playernum--;
 		room.enter_id = 0;
@@ -87,6 +87,11 @@ io.on('connection', function(socket) {
 		console.log("Next id:"+room.player_id);
 	});
 
+	//socket.on('link_player',function(userID,player_id){
+		//player.push({userID:userID,player_id:player_id});
+		//console.log('player:'+player);
+	//});
+
 	io.sockets.emit('set_turn_id',{turn_id:room.turn_id});
 	
 	socket.on('add_turn',function(){
@@ -95,13 +100,21 @@ io.on('connection', function(socket) {
 		console.log("Now turn:"+room.turn_id);
 		io.sockets.emit('check_turn_id',{turn_id:room.turn_id});
 	});
+	socket.on('send_point',function(userID,point){
+		for(var i=0;i<listplayer.length;i++){
+			if(userID == listplayer[i]){
+				player_point[i] = point;
+				console.log('listplayer'+listplayer);
+				console.log('玩家'+i+'：'+player_point[i]);
+				io.sockets.emit('show_point',player_point);
+			}
+		}
+	});
 
 	socket.on('disconnect', function() {
 		console.log('socket disconnected :'+ socket.id);
-		console.log('hi');
 		for (var i = 0; i < listplayer.length; i++) {
 			if (listplayer[i] == socket.id) {
-				console.log('yes')
 				room.playernum--;
 				io.sockets.emit('check_player_num',{playernum:room.playernum});
 				if(room.playernum != 4){
@@ -125,7 +138,7 @@ io.on('connection', function(socket) {
 	socket.on('different_value', function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {
 		io.sockets.emit('different_value',btn_id_1,btn_id_2,btn_val_1,btn_val_2);
 	});
-
+	
 	socket.on('gameover', function(){
 		listplayer = [];
 		room.playernum = 0 ;
