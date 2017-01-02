@@ -125,6 +125,13 @@ io.on('connection', function(socket) {
 	socket.on('different_value', function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {
 		io.sockets.emit('different_value',btn_id_1,btn_id_2,btn_val_1,btn_val_2);
 	});
+
+	socket.on('gameover', function(){
+		listplayer = [];
+		room.playernum = 0 ;
+		console.log(room.playernum);
+		io.sockets.emit('returnindex');
+	});
 	
 });
 
