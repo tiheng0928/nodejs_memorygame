@@ -21,8 +21,10 @@
 		var PK = 0;
 		var allCardVal = new Array();//存所有牌值的陣列
 		var cd = 1 ;
+		var point = 0;
 		var game_over = new Array();//存資料庫牌狀態的陣列
 		var false_num = 0; //資料庫狀態牌的數量
+
 		firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             currentUserId = user.uid;
@@ -165,13 +167,11 @@
 			</div>
 			<script>
 				//紀錄8張牌的值以及其狀態
-				
 				for(var i = 1 ; i <= 8 ; i++) {	
 					Database.ref('Cards/' +i).update({
 						'cards_status': true
 					});
 				}
-				
 
 				function reply_clickid(clicked_id){
 					console.log('clicked_id:' +clicked_id);
@@ -212,29 +212,28 @@
 				
 					for ( cd = 1 ; cd<=8 ; cd++){
 						firebase.database().ref('Cards/'+cd+'/cards_value').on('value', function(hihihi) {
-							console.log('hihihihihi');
-							//allCardVal[cd-1] = hihihi.val();
 							allCardVal.push(hihihi.val());
 							console.log('allCardVal: '+allCardVal);
 						});
 					}
 				
-
-
-
 				socket.on('same_value_b',function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {
 					buttonid[0] = btn_id_1;
 					buttonid[1] = btn_id_2;
 					buttonval[0] = btn_val_1;
 					buttonval[1] = btn_val_2;
 					console.log('翻出的牌為'+buttonid[0]+'號牌: '+buttonval[0]+' & '+buttonid[1]+'號牌: '+buttonval[1]);
-					console.log('牌值相同，玩家繼續.');
 					Database.ref('Cards/' +btn_id_1).update({
 						'cards_status': false
 					});
 					Database.ref('Cards/' +btn_id_2).update({
 						'cards_status': false
 					});
+					if(player_id == now_turn){
+						point = point+10;
+						console.log(user_id);
+						socket.emit('send_point',user_id,point);
+					}
 					buttonid = [];
 					buttonval = [];
 					clickcount = 0;
@@ -262,13 +261,18 @@
 				$('#play_btn').click(function(){
 					$('.room_area').hide();
 					$('.h1').hide();
+					$('.msg_area').hide();
 					$('.game_area').show();
 					$('#enter_h1').show();
+					$('.msg_area2').show();
 					socket.emit('get_id');
 					socket.on('give_id',function(room){
 						player_id = room.player_id;
 						console.log('player_id:'+player_id);
+						socket.emit('link_player',user_id,player_id);
 					});
+					socket.emit('send_point',user_id,point);
+					console.log('分數:'+point);
 				});
 
 				socket.on('set_turn_id',function(room){
@@ -288,6 +292,13 @@
 					}
 				});
 
+				socket.on('show_point',function(player_point){
+					for(i=0;i<player_point.length;i++){
+						console.log('player_'+i+':'+player_point[i]);
+						$("#point_"+i).html("<p>"+player_point[i]+"</p>");
+					}				
+				});
+
 				for(var i = 1 ; i <= 8 ; i++){
 					firebase.database().ref('Cards/'+i+'/cards_status').on('value', function(snapshot) {
 						game_over.push(snapshot.val());
@@ -305,9 +316,6 @@
 					});	
 				}
 						
-
-			
-		
 				socket.on('returnindex', function(){
 					//出現分數、玩家誰獲勝
 					$('.end').show();
@@ -316,8 +324,26 @@
 					window.location.replace('http://localhost:3000/gamelobby');
 				}
 			</script>
-			<div class="msg_area"></div>
+			<div class="msg_area">
+				
+				<h2>目前在線人數: 1人</h2>
+				<script>
+					Database.ref('users/' + currentUserId).on('value', function(snapshot) {
+        			console.log(snapshot.val());
+        			//$('.msg_area').append('<p>歡迎回來：'+ snapshot.userName + '</p>');
+					//document.write('<h3>歡迎回來' + snapshot.userName + '</h3>');
+				});
+				</script>
+			</div>
+			<div class="msg_area2">
+				<p>計分表</p>
+				<b>玩家 1：</b><div id="point_0"></div>
+				<b>玩家 2：</b><div id="point_1"></div>
+				<b>玩家 3：</b><div id="point_2"></div>
+				<b>玩家 4：</b><div id="point_3"></div>
+			</div>
+		</div>
+		<button onclick='golobby()' class ='end'>遊戲結束，回首頁</button>
 	</div>
-	<button onclick='golobby()' class ='end'>遊戲結束，回首頁</button>
 </body>
 </html>
