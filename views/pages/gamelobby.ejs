@@ -22,6 +22,7 @@
 		var allCardVal = new Array();//存所有牌值的陣列
 		var cd = 1 ;
 		var point = 0;
+		var combo = 0;
 		var game_over = new Array();//存資料庫牌狀態的陣列
 		var false_num = 0; //資料庫狀態牌的數量
 
@@ -161,6 +162,9 @@
 						
 					</ul>
 				</div>
+				<div class="combo">
+					combo <span class="combo_num"></span>
+				</div>
 				<div class="wait">
 					<p>還沒輪到你~</p>
 				</div>
@@ -222,6 +226,7 @@
 					buttonid[1] = btn_id_2;
 					buttonval[0] = btn_val_1;
 					buttonval[1] = btn_val_2;
+					combo++;
 					console.log('翻出的牌為'+buttonid[0]+'號牌: '+buttonval[0]+' & '+buttonid[1]+'號牌: '+buttonval[1]);
 					Database.ref('Cards/' +btn_id_1).update({
 						'cards_status': false
@@ -230,10 +235,17 @@
 						'cards_status': false
 					});
 					if(player_id == now_turn){
-						point = point+10;
-						console.log(user_id);
-						socket.emit('send_point',user_id,point);
+						if(combo>=2){
+							point = point+10*combo;
+							socket.emit('send_point_combo',user_id,point,combo);
+						}
+						else{
+							point = point+10;
+							console.log(user_id);
+							socket.emit('send_point',user_id,point);
+						}
 					}
+					check_end();
 					buttonid = [];
 					buttonval = [];
 					clickcount = 0;
@@ -255,8 +267,14 @@
 					buttonval = [];
 					clickcount = 0;
 					PK = 0;
+					combo = 0;
 				});
 
+				socket.on('show_combo',function(combo_num){
+					$(".combo").fadeIn(300);
+					$(".combo_num").html("<b> "+combo_num+" !!!</b>");
+					$(".combo").delay(600).fadeOut(300);
+				});
 
 				$('#play_btn').click(function(){
 					$('.room_area').hide();
@@ -299,29 +317,44 @@
 					}				
 				});
 
-				for(var i = 1 ; i <= 8 ; i++){
-					firebase.database().ref('Cards/'+i+'/cards_status').on('value', function(snapshot) {
-						game_over.push(snapshot.val());
-						console.log(game_over);
-						console.log('資料庫抓到的是:'+snapshot.val());
-						if(game_over[i-1] == false){
-							false_num++;
-							console.log('資料庫內false的數量:'+false_num);
-							if(false_num == 8){
-								false_num = 0;
-								game_over = [];
-								socket.emit('gameover');
-							};
-						}
-					});	
-				}
-						
+				function check_end(){
+					for(var i = 1 ; i <= 8 ; i++){
+						firebase.database().ref('Cards/'+i+'/cards_status').on('value', function(snapshot) {
+							game_over.push(snapshot.val());
+							console.log(game_over);
+							console.log('資料庫抓到的是:'+snapshot.val());
+							if(game_over[i-1] == false){
+								false_num++;
+								console.log('資料庫內false的數量:'+false_num);
+								if(false_num == 8){
+									socket.emit('gameover');
+									game_over = [];
+									false_num = 0;
+									console.log("finish!!!");
+								};
+							}
+						});	
+					}
+				}		
 				socket.on('returnindex', function(){
 					//出現分數、玩家誰獲勝
 					$('.end').show();
 				});
+
+				socket.on('clear_all',function(player_point,clear_player,clear_enter){
+					player_id = clear_player;
+					enter_id = clear_enter;
+					for(i=0;i<player_point.length;i++){
+						console.log('player_'+i+':'+player_point[i]);
+						$("#point_"+i).html("<p>"+player_point[i]+"</p>");
+					}
+				});
 				function golobby(){
 					window.location.replace('http://localhost:3000/gamelobby');
+					enter_id = 0;
+					for(i=0;i<4;i++){
+						$("#point_"+i).html("<p>0</p>");
+					}		
 				}
 			</script>
 			<div class="msg_area">
