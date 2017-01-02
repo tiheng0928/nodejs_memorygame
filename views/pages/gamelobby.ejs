@@ -19,6 +19,8 @@
 		var buttonval = new Array();//藉由buttonid去DB抓值用
 		var clickcount = 0;
 		var PK = 0;
+		var allCardVal = new Array();//存所有牌值的陣列
+		var cd = 1 ;
 
 		firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
@@ -138,21 +140,21 @@
 			<div class="game_area">
 				<div class="game">
 					<ul>
-						<li><button onClick="reply_clickid(this.id)" class='button' id='1' value='1'></button></li>
-						<li><button onClick="reply_clickid(this.id)" class='button' id='2' value='2'></button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='1'></button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='2'></button></li>
 						
 					</ul>
 					<ul>
-						<li><button onClick="reply_clickid(this.id)" class='button' id='3' value='3'></button></li>
-						<li><button onClick="reply_clickid(this.id)" class='button' id='4' value='4'></button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='3'></button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='4'></button></li>
 					</ul>
 					<ul>
-						<li><button onClick="reply_clickid(this.id)" class='button' id='5' value='5'></button></li>
-						<li><button onClick="reply_clickid(this.id)" class='button' id='6' value='6'></button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='5'></button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='6'></button></li>
 					</ul>
 					<ul>
-						<li><button onClick="reply_clickid(this.id)" class='button' id='7' value='7'></button></li>
-						<li><button onClick="reply_clickid(this.id)" class='button' id='8' value='8'></button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='7'></button></li>
+						<li><button onClick="reply_clickid(this.id)" class='button' id='8'></button></li>
 						
 					</ul>
 				</div>
@@ -171,6 +173,9 @@
 				}
 				*/
 
+				
+				
+
 
 				function reply_clickid(clicked_id){
 					console.log('clicked_id:' +clicked_id);
@@ -183,6 +188,9 @@
 						console.log('PK: '+PK);
 						//判斷玩家點兩下之後換人
 						clickcount++;
+						socket.emit("click_card",clicked_id);
+						
+
 						if(clickcount==2){
 							//判斷牌的value是否一樣
 							if(buttonval[0] == buttonval[1]) {
@@ -199,6 +207,25 @@
 					});
 				}
 
+				//觸發所有人翻一張牌
+				socket.on('turn_card',function (clicked_id){
+					$('#'+clicked_id).attr("disabled","disabled");
+					$('#'+clicked_id).html('<p>'+allCardVal[clicked_id-1]+'</p>');
+				});
+				//將所有排的val存在此陣列
+				
+					for ( cd = 1 ; cd<=8 ; cd++){
+						firebase.database().ref('Cards/'+cd+'/cards_value').on('value', function(hihihi) {
+							console.log('hihihihihi');
+							//allCardVal[cd-1] = hihihi.val();
+							allCardVal.push(hihihi.val());
+							console.log('allCardVal: '+allCardVal);
+						});
+					}
+				
+
+
+
 				socket.on('same_value_b',function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {
 					buttonid[0] = btn_id_1;
 					buttonid[1] = btn_id_2;
@@ -206,18 +233,25 @@
 					buttonval[1] = btn_val_2;
 					console.log('翻出的牌為'+buttonid[0]+'號牌: '+buttonval[0]+' & '+buttonid[1]+'號牌: '+buttonval[1]);
 									console.log('牌值相同，玩家繼續.');
-					$('#'+buttonid[0]).attr("disabled","disabled");
-					$('#'+buttonid[0]).html('<p>'+buttonval[0]+'</p>');
-					$('#'+buttonid[1]).attr("disabled","disabled");
-					$('#'+buttonid[1]).html('<p>'+ buttonval[1]+'</p>');
+					//$('#'+buttonid[0]).html('<p>'+buttonval[0]+'</p>');
+					//$('#'+buttonid[1]).html('<p>'+ buttonval[1]+'</p>');
 					buttonid = [];
 					buttonval = [];
 					clickcount = 0;
 					PK = 0;
 				});
-				socket.on('different_value',function() {
-					console.log('翻出的牌為'+buttonid[0]+'號牌: '+buttonval[0]+' & '+buttonid[1]+'號牌: '+buttonval[1]);
+				socket.on('different_value',function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {
+					console.log('翻出的牌為'+btn_id_1+'號牌: '+btn_val_1+' & '+btn_id_2+'號牌: '+btn_val_2);
 					console.log('牌值不同，換人翻牌.');
+					$('#'+btn_id_1).delay(100).queue(function(next) { $(this).attr("disabled",false); next();});
+					//$('#'+buttonid[0]).delay(1000).html('');
+					$('#'+btn_id_1).delay(100).queue(function(next) { $(this).html(""); next();});
+
+					//$('#'+buttonid[1]).delay(1000).attr("disabled",false);
+					$('#'+btn_id_2).delay(100).queue(function(next) { $(this).attr("disabled",false); next();});
+					$('#'+btn_id_2).delay(100).queue(function(next) { $(this).html(""); next();});
+
+					//$('#'+buttonid[1]).delay(1000).html('');
 					buttonid = [];
 					buttonval = [];
 					clickcount = 0;

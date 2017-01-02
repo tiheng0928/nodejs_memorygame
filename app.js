@@ -112,6 +112,12 @@ io.on('connection', function(socket) {
 	
 	});
 
+	//翻一張牌
+	socket.on('click_card',function (clicked_id) {
+		io.sockets.emit('turn_card',clicked_id);
+	});
+
+
 	socket.on('same_value_a', function(btn_id_1,btn_id_2,btn_val_1,btn_val_2){
 		io.sockets.emit('same_value_b',btn_id_1,btn_id_2,btn_val_1,btn_val_2);
 	});
