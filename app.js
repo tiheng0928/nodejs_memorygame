@@ -10,7 +10,6 @@ var firebase = require("firebase");
 var userID;
 var listplayer = new Array();
 var player_point = new Array();
-player_point = [0,0,0,0];
 
 // Initialize Firebase
 var config = {
@@ -101,7 +100,7 @@ io.on('connection', function(socket) {
 		console.log("Now turn:"+room.turn_id);
 		io.sockets.emit('check_turn_id',{turn_id:room.turn_id});
 	});
-
+	
 	socket.on('send_point',function(userID,point){
 		for(var i=0;i<listplayer.length;i++){
 			if(userID == listplayer[i]){
@@ -109,18 +108,6 @@ io.on('connection', function(socket) {
 				console.log('listplayer'+listplayer);
 				console.log('玩家'+i+'：'+player_point[i]);
 				io.sockets.emit('show_point',player_point);
-			}
-		}
-	});
-
-	socket.on('send_point_combo',function(userID,point,combo){
-		for(var i=0;i<listplayer.length;i++){
-			if(userID == listplayer[i]){
-				player_point[i] = point;
-				console.log('listplayer'+listplayer);
-				console.log('玩家'+i+'：'+player_point[i]);
-				io.sockets.emit('show_point',player_point);
-				io.sockets.emit('show_combo',combo);
 			}
 		}
 	});
@@ -152,18 +139,18 @@ io.on('connection', function(socket) {
 	socket.on('different_value', function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {
 		io.sockets.emit('different_value',btn_id_1,btn_id_2,btn_val_1,btn_val_2);
 	});
-	
+
+	socket.on('readtogameover', function(){
+		io.sockets.emit('show_point', player_point);
+		io.sockets.emit('do_gameover');
+	});
+
 	socket.on('gameover', function(){
 		listplayer = [];
 		room.playernum = 0 ;
-		player_point = [0,0,0,0];
-		room.player_id = 0;
-		room.turn_id = 0;
-		room.enter_id = 0;
-		console.log("歸零player_id:"+room.player_id);
-		console.log("歸零player_id:"+room.player_id);
+		room.player_id = 0 ;
+		console.log(room.playernum);
 		io.sockets.emit('returnindex');
-		io.sockets.emit('clear_all',player_point,room.player_id,room.enter_id);
 	});
 	
 });
