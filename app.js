@@ -139,6 +139,15 @@ io.on('connection', function(socket) {
 		io.sockets.emit('different_value',btn_id_1,btn_id_2,btn_val_1,btn_val_2);
 	});
 	
+	socket.on('readytoend', function(){
+		io.sockets.emit('show_point', player_point);
+	});
+
+	socket.on('readtogameover', function(){
+		io.sockets.emit('show_point', player_point);
+		io.sockets.emit('do_gameover');
+	});
+
 	socket.on('gameover', function(){
 		listplayer = [];
 		room.playernum = 0 ;

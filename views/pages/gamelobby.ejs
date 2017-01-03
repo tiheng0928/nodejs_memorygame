@@ -25,6 +25,7 @@
 		var combo = 0;
 		var game_over = new Array();//存資料庫牌狀態的陣列
 		var false_num = 0; //資料庫狀態牌的數量
+		var a = 0;
 
 		firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
@@ -237,7 +238,7 @@
 					if(player_id == now_turn){
 						if(combo>=2){
 							point = point+10*combo;
-							socket.emit('send_point_combo',user_id,point,combo);
+							socket.emit('send_point',user_id,point);
 						}
 						else{
 							point = point+10;
@@ -311,29 +312,26 @@
 				});
 
 				socket.on('show_point',function(player_point){
+					a++;
+					console.log('a='+a);
 					for(i=0;i<player_point.length;i++){
 						console.log('player_'+i+':'+player_point[i]);
 						$("#point_"+i).html("<p>"+player_point[i]+"</p>");
 					}				
 				});
 				
+				
 				function check_end(){
 					if(false_num != 8){
 						false_num = false_num + 2 ;
 						console.log('現在資料庫內false數量為：'+ false_num);
-						if(false_num == 8){
-							socket.emit('gameover');
-							false_num = 0;
-							game_over = [];
-							console.log('變數重置完成');
+						if(false_num == 8){				
+							socket.emit('readtogameover');
 						}
-					}else{
-						socket.emit('gameover');
-						false_num = 0;
-						game_over = [];
-						console.log('變數重置完成');
+					}else{				
+						return
 					}
-
+				}	
 					/*
 					for(var i = 1 ; i <= 8 ; i++){
 						firebase.database().ref('Cards/'+i+'/cards_status').on('value', function(snapshot) {
@@ -344,15 +342,23 @@
 								false_num++;
 								console.log('資料庫內false的數量:'+false_num);
 								if(false_num == 8){
-									socket.emit('gameover');
 									game_over = [];
 									false_num = 0;
+									socket.emit('gameover');
 									console.log("finish!!!");
 								};
 							}
 						});	
-					}*/
-				}		
+					}
+					*/	
+
+				socket.on('do_gameover', function(){
+					false_num = 0;
+					game_over = [];
+					socket.emit('gameover');
+					console.log('變數重置完成');
+				});
+
 				socket.on('returnindex', function(){
 					//出現分數、玩家誰獲勝
 					$('.end').show();
