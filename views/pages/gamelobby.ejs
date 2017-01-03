@@ -25,6 +25,8 @@
 		var combo = 0;
 		var game_over = new Array();//存資料庫牌狀態的陣列
 		var false_num = 0; //資料庫狀態牌的數量
+		var a = 0;
+		var username;
 
 		firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
@@ -70,7 +72,7 @@
 					});	
 					socket.emit('add user');
 					socket.on('get_user_id',function(userID){
-						console.log(userID);
+						console.log('socketID:'+userID);
 						user_id = userID;
 					});
 
@@ -237,7 +239,7 @@
 					if(player_id == now_turn){
 						if(combo>=2){
 							point = point+10*combo;
-							socket.emit('send_point_combo',user_id,point,combo);
+							socket.emit('send_point',user_id,point);
 						}
 						else{
 							point = point+10;
@@ -283,11 +285,26 @@
 					$('.game_area').show();
 					$('#enter_h1').show();
 					$('.msg_area2').show();
-					socket.emit('get_id');
+					socket.emit('get_id',currentUserId,user_id);
 					socket.on('give_id',function(room){
 						player_id = room.player_id;
 						console.log('player_id:'+player_id);
 						socket.emit('link_player',user_id,player_id);
+					});
+					socket.on('getFB_ID',function(display_user){
+						if(display_user.length == 4){
+							for(var i = 0 ; i < 4 ; i++){	
+								firebase.database().ref('users/'+display_user[i]).on('value', function(getname) {
+									console.log(getname.val().username);
+									username = getname.val().username;
+									console.log('username：'+username);
+
+									$("#user_"+i).html("<b>"+username+":</b>");
+									console.log('after css username:'+username);
+								});
+								
+							}
+						}
 					});
 					socket.emit('send_point',user_id,point);
 					console.log('分數:'+point);
@@ -311,31 +328,53 @@
 				});
 
 				socket.on('show_point',function(player_point){
+					a++;
+					console.log('a='+a);
 					for(i=0;i<player_point.length;i++){
 						console.log('player_'+i+':'+player_point[i]);
 						$("#point_"+i).html("<p>"+player_point[i]+"</p>");
 					}				
 				});
-
+				
+				
 				function check_end(){
+					if(false_num != 8){
+						false_num = false_num + 2 ;
+						console.log('現在資料庫內false數量為：'+ false_num);
+						if(false_num == 8){				
+							socket.emit('readtogameover');
+						}
+					}else{				
+						return
+					}
+				}	
+					/*
 					for(var i = 1 ; i <= 8 ; i++){
 						firebase.database().ref('Cards/'+i+'/cards_status').on('value', function(snapshot) {
-							game_over.push(snapshot.val());
+							game_over[i-1] = snapshot.val();
 							console.log(game_over);
 							console.log('資料庫抓到的是:'+snapshot.val());
 							if(game_over[i-1] == false){
 								false_num++;
 								console.log('資料庫內false的數量:'+false_num);
 								if(false_num == 8){
-									socket.emit('gameover');
 									game_over = [];
 									false_num = 0;
+									socket.emit('gameover');
 									console.log("finish!!!");
 								};
 							}
 						});	
 					}
-				}		
+					*/	
+
+				socket.on('do_gameover', function(){
+					false_num = 0;
+					game_over = [];
+					socket.emit('gameover');
+					console.log('變數重置完成');
+				});
+
 				socket.on('returnindex', function(){
 					//出現分數、玩家誰獲勝
 					$('.end').show();
@@ -371,10 +410,12 @@
 			<div class="msg_area2">
 				<p>計分表</p>
 				<hr>
-				<b>玩家 1：</b><div id="point_0"></div>
-				<b>玩家 2：</b><div id="point_1"></div>
-				<b>玩家 3：</b><div id="point_2"></div>
-				<b>玩家 4：</b><div id="point_3"></div>
+				
+				<b id ='user_1'></b> <div id="point_0"></div>
+				<b id ='user_2'></b> <div id="point_1"></div>
+				<b id ='user_3'></b> <div id="point_2"></div>
+				<b id ='user_4'></b> <div id="point_3"></div>
+				
 			</div>
 		</div>
 		<button onclick='golobby()' class ='end'>遊戲結束，回首頁</button>
