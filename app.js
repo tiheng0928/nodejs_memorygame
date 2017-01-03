@@ -5,11 +5,14 @@ var express  = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
-var room = {playernum: 0, enter_id: 0, player_id:0, turn_id:0};
+var room = {playernum: 0, enter_id: 0, player_id:0, turn_id:0, user_id:''};
 var firebase = require("firebase");
 var userID;
 var listplayer = new Array();
 var player_point = new Array();
+var firebaseID = new Array();
+var socketID = new Array();
+var display_user = new Array();
 
 // Initialize Firebase
 var config = {
@@ -78,9 +81,22 @@ io.on('connection', function(socket) {
 		}
 	});
 
-	socket.on('get_id',function(){
+	socket.on('get_id',function(currentUserId,user_id){
+		var f;
 		socket.room = room;
+		firebaseID.push(currentUserId);
+		socketID.push(user_id);
+		console.log('資料庫ID陣列有：'+firebaseID);
+		console.log('socketID陣列有：'+socketID)
+		for(var i = 0 ; i < 4 ; i++){
+			if(user_id = socketID[i]){
+				 f = firebaseID[i];
+			}
+		}
+		display_user.push(f);
+		io.sockets.emit('getFB_ID',display_user);		
 		console.log("Give id:"+room.player_id);
+		room.user_id = user_id;
 		socket.emit('give_id',{player_id:room.player_id});
 		room.player_id++;
 		io.sockets.emit('check_turn_id',{turn_id:room.turn_id});

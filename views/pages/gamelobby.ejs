@@ -26,6 +26,7 @@
 		var game_over = new Array();//存資料庫牌狀態的陣列
 		var false_num = 0; //資料庫狀態牌的數量
 		var a = 0;
+		var username;
 
 		firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
@@ -71,7 +72,7 @@
 					});	
 					socket.emit('add user');
 					socket.on('get_user_id',function(userID){
-						console.log(userID);
+						console.log('socketID:'+userID);
 						user_id = userID;
 					});
 
@@ -284,11 +285,26 @@
 					$('.game_area').show();
 					$('#enter_h1').show();
 					$('.msg_area2').show();
-					socket.emit('get_id');
+					socket.emit('get_id',currentUserId,user_id);
 					socket.on('give_id',function(room){
 						player_id = room.player_id;
 						console.log('player_id:'+player_id);
 						socket.emit('link_player',user_id,player_id);
+					});
+					socket.on('getFB_ID',function(display_user){
+						if(display_user.length == 4){
+							for(var i = 0 ; i < 4 ; i++){	
+								firebase.database().ref('users/'+display_user[i]).on('value', function(getname) {
+									console.log(getname.val().username);
+									username = getname.val().username;
+									console.log('username：'+username);
+
+									$("#user_"+i).html("<b>"+username+":</b>");
+									console.log('after css username:'+username);
+								});
+								
+							}
+						}
 					});
 					socket.emit('send_point',user_id,point);
 					console.log('分數:'+point);
@@ -394,10 +410,12 @@
 			<div class="msg_area2">
 				<p>計分表</p>
 				<hr>
-				<b>玩家 1：</b><div id="point_0"></div>
-				<b>玩家 2：</b><div id="point_1"></div>
-				<b>玩家 3：</b><div id="point_2"></div>
-				<b>玩家 4：</b><div id="point_3"></div>
+				
+				<b id ='user_1'></b> <div id="point_0"></div>
+				<b id ='user_2'></b> <div id="point_1"></div>
+				<b id ='user_3'></b> <div id="point_2"></div>
+				<b id ='user_4'></b> <div id="point_3"></div>
+				
 			</div>
 		</div>
 		<button onclick='golobby()' class ='end'>遊戲結束，回首頁</button>
