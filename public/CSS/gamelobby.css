@@ -23,8 +23,9 @@
 }
 .game{
 	width:400px;
-	height: 400px;
+	height: 250px;
 	margin: auto;
+	margin-bottom: 20px;
 }
 .game ul{
 	margin-bottom: 12.5px;
@@ -92,6 +93,14 @@
 }
 .clear{
 	clear: both;
+}
+.combo{
+	text-align: center;
+	font-size: 24px;
+	display: none;
+}
+.combo b{
+	font-weight: 200;
 }
 
 /*------------------按鈕--------------------*/
