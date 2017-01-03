@@ -316,11 +316,28 @@
 						$("#point_"+i).html("<p>"+player_point[i]+"</p>");
 					}				
 				});
-
+				
 				function check_end(){
+					if(false_num != 8){
+						false_num = false_num + 2 ;
+						console.log('現在資料庫內false數量為：'+ false_num);
+						if(false_num == 8){
+							socket.emit('gameover');
+							false_num = 0;
+							game_over = [];
+							console.log('變數重置完成');
+						}
+					}else{
+						socket.emit('gameover');
+						false_num = 0;
+						game_over = [];
+						console.log('變數重置完成');
+					}
+
+					/*
 					for(var i = 1 ; i <= 8 ; i++){
 						firebase.database().ref('Cards/'+i+'/cards_status').on('value', function(snapshot) {
-							game_over.push(snapshot.val());
+							game_over[i-1] = snapshot.val();
 							console.log(game_over);
 							console.log('資料庫抓到的是:'+snapshot.val());
 							if(game_over[i-1] == false){
@@ -334,7 +351,7 @@
 								};
 							}
 						});	
-					}
+					}*/
 				}		
 				socket.on('returnindex', function(){
 					//出現分數、玩家誰獲勝

@@ -142,6 +142,7 @@ io.on('connection', function(socket) {
 	socket.on('gameover', function(){
 		listplayer = [];
 		room.playernum = 0 ;
+		room.player_id = 0 ;
 		console.log(room.playernum);
 		io.sockets.emit('returnindex');
 	});
