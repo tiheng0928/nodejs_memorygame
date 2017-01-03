@@ -138,10 +138,6 @@ io.on('connection', function(socket) {
 	socket.on('different_value', function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {
 		io.sockets.emit('different_value',btn_id_1,btn_id_2,btn_val_1,btn_val_2);
 	});
-	
-	socket.on('readytoend', function(){
-		io.sockets.emit('show_point', player_point);
-	});
 
 	socket.on('readtogameover', function(){
 		io.sockets.emit('show_point', player_point);
