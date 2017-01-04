@@ -26,6 +26,7 @@
 		var game_over = new Array();//存資料庫牌狀態的陣列
 		var false_num = 0; //資料庫狀態牌的數量
 		var a = 0;
+		var username;
 
 		firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
@@ -59,6 +60,16 @@
 				</div>
 
 				<script>
+					socket.emit('add user');
+					socket.on('usernum',function(user_num){
+						console.log('現在人數:'+user_num);
+						console.log('hello?');
+						$('.msg_area h2').html('目前在線人數：'+user_num);
+
+					});
+					socket.on('check_list_num');
+
+
 
 					$( document ).on( "click", "#join", function(){
 							if($("#join").prop("checked")){
@@ -69,9 +80,9 @@
 								socket.emit('player_num_del');
 							}
 					});	
-					socket.emit('add user');
+					
 					socket.on('get_user_id',function(userID){
-						console.log(userID);
+						console.log('socketID:'+userID);
 						user_id = userID;
 					});
 
@@ -163,9 +174,9 @@
 						
 					</ul>
 				</div>
-				<!--<div class="combo">
+				<div class="combo">
 					combo <span class="combo_num"></span>
-				</div>-->
+				</div>
 				<div class="wait">
 					<p>還沒輪到你~</p>
 				</div>
@@ -222,7 +233,7 @@
 						});
 					}
 				
-				socket.on('same_value_b',function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {
+				socket.on('same_value_b',function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {    //玩家改寫資料庫牌狀態為false
 					buttonid[0] = btn_id_1;
 					buttonid[1] = btn_id_2;
 					buttonval[0] = btn_val_1;
@@ -235,23 +246,26 @@
 					Database.ref('Cards/' +btn_id_2).update({
 						'cards_status': false
 					});
+
 					if(player_id == now_turn){
-						/*if(combo>=2){
+						if(combo>=2){
 							point = point+10*combo;
 							socket.emit('send_point',user_id,point);
 						}
-						else{*/
-						point = point+10;
-						console.log(user_id);
-						socket.emit('send_point',user_id,point);
+						else{
+							point = point+10;
+							console.log(user_id);
+							socket.emit('send_point',user_id,point);
+						}
 					}
-					//}
+
 					check_end();
 					buttonid = [];
 					buttonval = [];
 					clickcount = 0;
 					PK = 0;
 				});
+
 				socket.on('different_value',function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {
 					console.log('翻出的牌為'+btn_id_1+'號牌: '+btn_val_1+' & '+btn_id_2+'號牌: '+btn_val_2);
 					console.log('牌值不同，換人翻牌.');
@@ -268,14 +282,14 @@
 					buttonval = [];
 					clickcount = 0;
 					PK = 0;
-					//combo = 0;
+					combo = 0;
 				});
 
-				/*socket.on('show_combo',function(combo_num){
+				socket.on('show_combo',function(combo_num){
 					$(".combo").fadeIn(300);
 					$(".combo_num").html("<b> "+combo_num+" !!!</b>");
 					$(".combo").delay(600).fadeOut(300);
-				});*/
+				});
 
 				$('#play_btn').click(function(){
 					$('.room_area').hide();
@@ -284,11 +298,26 @@
 					$('.game_area').show();
 					$('#enter_h1').show();
 					$('.msg_area2').show();
-					socket.emit('get_id');
+					socket.emit('get_id',currentUserId,user_id);
 					socket.on('give_id',function(room){
 						player_id = room.player_id;
 						console.log('player_id:'+player_id);
 						socket.emit('link_player',user_id,player_id);
+					});
+					socket.on('getFB_ID',function(display_user){
+						if(display_user.length == 4){
+							for(var i = 0 ; i < 4 ; i++){	
+								firebase.database().ref('users/'+display_user[i]).on('value', function(getname) {
+									console.log(getname.val().username);
+									username = getname.val().username;
+									console.log('username：'+username);
+
+									$("#user_"+i).html("<b>"+username+":</b>");
+									console.log('after css username:'+username);
+								});
+								
+							}
+						}
 					});
 					socket.emit('send_point',user_id,point);
 					console.log('分數:'+point);
@@ -381,23 +410,35 @@
 				}
 			</script>
 			<div class="msg_area">
-				
-				<h2>目前在線人數: 1人</h2>
+				<h2>目前線上人數：</h2>
 				<script>
-					Database.ref('users/' + currentUserId).on('value', function(snapshot) {
-        			console.log(snapshot.val());
-        			//$('.msg_area').append('<p>歡迎回來：'+ snapshot.userName + '</p>');
-					//document.write('<h3>歡迎回來' + snapshot.userName + '</h3>');
-				});
-				</script>
+					firebase.auth().onAuthStateChanged(function (user) {
+        				if (user) {
+           					currentUserId = user.uid;
+       						userName = user.displayName;
+            				Database.ref('users/' + currentUserId).once('value').then(function(snapshot) {
+								var cc = snapshot.val().username;
+								console.log('currentUserId:'+currentUserId);
+        						console.log('使用者姓名：'+cc);
+        						$('.msg_area').append('<h3>歡迎：'+cc+ '</h3>');
+        					});
+        				}else{
+        					window.location.replace('http://fb-nodejs-pokergame.herokuapp.com/');
+        				}
+    				});
+					
+        		
+        		</script>
 			</div>
 			<div class="msg_area2">
 				<p>計分表</p>
 				<hr>
-				<b>玩家 1：</b><div id="point_0"></div>
-				<b>玩家 2：</b><div id="point_1"></div>
-				<b>玩家 3：</b><div id="point_2"></div>
-				<b>玩家 4：</b><div id="point_3"></div>
+				
+				<b id ='user_1'></b> <div id="point_0"></div>
+				<b id ='user_2'></b> <div id="point_1"></div>
+				<b id ='user_3'></b> <div id="point_2"></div>
+				<b id ='user_4'></b> <div id="point_3"></div>
+				
 			</div>
 		</div>
 		<button onclick='golobby()' class ='end'>遊戲結束，回首頁</button>

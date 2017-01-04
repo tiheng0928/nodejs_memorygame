@@ -5,11 +5,15 @@ var express  = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
-var room = {playernum: 0, enter_id: 0, player_id:0, turn_id:0};
+var room = {playernum: 0, enter_id: 0, player_id:0, turn_id:0, user_id:''};
 var firebase = require("firebase");
 var userID;
 var listplayer = new Array();
 var player_point = new Array();
+var firebaseID = new Array();
+var socketID = new Array();
+var display_user = new Array();
+var usernumber = 0;
 
 // Initialize Firebase
 var config = {
@@ -37,12 +41,18 @@ app.get('/gamelobby', page.gamelobby);
 
 //socket
 io.on('connection', function(socket) {
-	socket.on('add user',function(){
+	socket.on('add user',function(){ 						//進入socket給ID,查看線上人數
 		console.log('player connected, ID：'+socket.id);
 		userID = socket.id;
+		console.log('user_num:'+usernumber);
+		usernumber++;
+		io.sockets.emit('usernum',usernumber);
 		socket.emit('get_user_id',userID);	
-	})
-	
+	});
+
+	socket.on('check_list_num', function(){
+		socket.emit('check_player_num',room.playnum);
+	});
 	socket.emit('set_enter_id',{enter_id:room.enter_id});
 	console.log(room.enter_id);
 
@@ -78,19 +88,26 @@ io.on('connection', function(socket) {
 		}
 	});
 
-	socket.on('get_id',function(){
-		socket.room = room;
-		console.log("Give id:"+room.player_id);
-		socket.emit('give_id',{player_id:room.player_id});
-		room.player_id++;
+	socket.on('get_id',function(currentUserId,user_id){
+		var f;
+		//socket.room = room;
+		firebaseID.push(currentUserId);
+		socketID.push(user_id);
+		console.log('資料庫ID陣列有：'+firebaseID); //顯示排隊陣列中的firebaseID
+		console.log('socketID陣列有：'+socketID)	//顯示排隊陣列中的socketID
+		
+		display_user.push(currentUserId);		//將排隊玩家的firebaseID依序插入display_user陣列
+		
+		console.log("Give id:"+room.player_id); //顯示現在玩家的ID
+		room.user_id = user_id;					
+		
+		socket.emit('give_id',{player_id:room.player_id});	//玩家ID傳給前台user
+		room.player_id++;									//玩家ID+1，準備給下個玩家用
+
 		io.sockets.emit('check_turn_id',{turn_id:room.turn_id});
+		io.sockets.emit('getFB_ID',display_user);
 		console.log("Next id:"+room.player_id);
 	});
-
-	//socket.on('link_player',function(userID,player_id){
-		//player.push({userID:userID,player_id:player_id});
-		//console.log('player:'+player);
-	//});
 
 	io.sockets.emit('set_turn_id',{turn_id:room.turn_id});
 	
@@ -100,7 +117,6 @@ io.on('connection', function(socket) {
 		console.log("Now turn:"+room.turn_id);
 		io.sockets.emit('check_turn_id',{turn_id:room.turn_id});
 	});
-	
 	socket.on('send_point',function(userID,point){
 		for(var i=0;i<listplayer.length;i++){
 			if(userID == listplayer[i]){
@@ -113,6 +129,8 @@ io.on('connection', function(socket) {
 	});
 
 	socket.on('disconnect', function() {
+		usernumber--;
+		io.sockets.emit('usernum',usernumber);
 		console.log('socket disconnected :'+ socket.id);
 		for (var i = 0; i < listplayer.length; i++) {
 			if (listplayer[i] == socket.id) {
@@ -132,10 +150,14 @@ io.on('connection', function(socket) {
 	});
 
 
-	socket.on('same_value_a', function(btn_id_1,btn_id_2,btn_val_1,btn_val_2){
-		io.sockets.emit('same_value_b',btn_id_1,btn_id_2,btn_val_1,btn_val_2);
+	socket.on('same_value_a', function(btn_id_1,btn_id_2,btn_val_1,btn_val_2){  //收到玩家正確翻牌訊息
+		socket.emit('same_value_b',btn_id_1,btn_id_2,btn_val_1,btn_val_2);	//讓資料庫牌狀態變false
 	});
-
+	/*
+	socket.on('displaypoint', function(){
+		io.sockets.emit('display_point_onpage');
+	});
+	*/
 	socket.on('different_value', function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {
 		io.sockets.emit('different_value',btn_id_1,btn_id_2,btn_val_1,btn_val_2);
 	});
