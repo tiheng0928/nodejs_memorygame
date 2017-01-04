@@ -130,6 +130,9 @@ io.on('connection', function(socket) {
 
 	socket.on('disconnect', function() {
 		usernumber--;
+		if(usernumber <= 0){
+			usernumber = 0;
+		}
 		io.sockets.emit('usernum',usernumber);
 		console.log('socket disconnected :'+ socket.id);
 		for (var i = 0; i < listplayer.length; i++) {
