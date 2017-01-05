@@ -337,9 +337,7 @@
 				////中途有人離開遊戲，遊戲停止
 				socket.on('someone_depart', function() {
 					$('.button').attr("disabled","disabled");
-					playing_player = 0;
-					socket.emit('plus_playing_player',playing_player);
-					socket.emit('gameover');
+					socket.emit('gameover_someone');
 				});
 
 				socket.on('set_turn_id',function(room){
@@ -391,6 +389,7 @@
 
 				socket.on('returnindex', function(){
 					//出現分數、玩家誰獲勝
+					socket.emit('clear_0');
 					$('.end').show();
 				});
 

@@ -159,9 +159,11 @@ io.on('connection', function(socket) {
 		//中途有人離開遊戲，遊戲停止
 		console.log('playing_player:'+playing_player);
 		if (playing_player == 4) {
-			io.sockets.emit('someone_depart');
-			playing_player = 0;
-			io.sockets.emit('plus_playing_player_a', playing_player);
+			for(var i = 0 ; i < 4 ; i++){
+				if(socket.id == listplayer[i]){
+					io.sockets.emit('someone_depart');
+				}
+			}
 		}		
 	
 	});
@@ -190,11 +192,32 @@ io.on('connection', function(socket) {
 	});
 
 	socket.on('gameover', function(){
+		io.sockets.emit('returnindex');
+	});
+
+	socket.on('clear_0',function(){
 		listplayer = [];
 		room.playernum = 0 ;
 		room.player_id = 0 ;
 		console.log(room.playernum);
-		io.sockets.emit('returnindex');
+	});
+
+	socket.on('gameover_someone', function(){  //有人中斷的遊戲結束
+		console.log('遊玩人數歸0:'+room.playernum);
+		console.log('listplayer:'+listplayer);
+
+		for(var i =0; i <4 ; i++){
+			for(var j = 0; j <= i ; j++){
+				if(i == j ){
+					socket.to(listplayer[i]).emit('returnindex');
+					console.log('有發送returnindex~');
+					console.log('listplayer:'+listplayer[i]);
+
+				}
+			}
+
+		}
+	
 	});
 	
 });
