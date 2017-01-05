@@ -49,10 +49,11 @@ io.on('connection', function(socket) {
 		io.sockets.emit('usernum',usernumber);
 		socket.emit('get_user_id',userID);	
 	});
-
+	/*
 	socket.on('check_list_num', function(){
 		socket.emit('check_player_num',room.playnum);
 	});
+	*/
 	socket.emit('set_enter_id',{enter_id:room.enter_id});
 	console.log(room.enter_id);
 
