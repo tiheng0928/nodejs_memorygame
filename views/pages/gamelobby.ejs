@@ -356,30 +356,12 @@
 							socket.emit('readtogameover');
 						}
 					}else{				
-						return
+						console.log('現在資料庫內false數量為：'+ false_num);
+						socket.emit('readtogameover');
 					}
 				}	
-					/*
-					for(var i = 1 ; i <= 8 ; i++){
-						firebase.database().ref('Cards/'+i+'/cards_status').on('value', function(snapshot) {
-							game_over[i-1] = snapshot.val();
-							console.log(game_over);
-							console.log('資料庫抓到的是:'+snapshot.val());
-							if(game_over[i-1] == false){
-								false_num++;
-								console.log('資料庫內false的數量:'+false_num);
-								if(false_num == 8){
-									game_over = [];
-									false_num = 0;
-									socket.emit('gameover');
-									console.log("finish!!!");
-								};
-							}
-						});	
-					}
-					*/	
-
-				socket.on('do_gameover', function(){
+				
+				socket.on('do_gameover', function(){   //呼叫遊戲結束
 					false_num = 0;
 					game_over = [];
 					socket.emit('gameover');
