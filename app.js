@@ -14,6 +14,7 @@ var firebaseID = new Array();
 var socketID = new Array();
 var display_user = new Array();
 var usernumber = 0;
+var playing_player = 0;
 
 // Initialize Firebase
 var config = {
@@ -129,11 +130,20 @@ io.on('connection', function(socket) {
 		}
 	});
 
+	//playing_player
+	socket.on('plus_playing_player', function() {
+		playing_player ++;
+		console.log('playing_player:' +playing_player);
+		io.sockets.emit('plus_playing_player_a', playing_player);
+	});
+
+	//disconnect
 	socket.on('disconnect', function() {
 		usernumber--;
 		if(usernumber <= 0){
 			usernumber = 0;
 		}
+
 		io.sockets.emit('usernum',usernumber);
 		console.log('socket disconnected :'+ socket.id);
 		for (var i = 0; i < listplayer.length; i++) {
@@ -145,6 +155,14 @@ io.on('connection', function(socket) {
 				}
 			}
 		}
+
+		//中途有人離開遊戲，遊戲停止
+		console.log('playing_player:'+playing_player);
+		if (playing_player == 4) {
+			io.sockets.emit('someone_depart');
+			playing_player = 0;
+			io.sockets.emit('plus_playing_player_a', playing_player);
+		}		
 	
 	});
 
