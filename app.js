@@ -118,8 +118,8 @@ io.on('connection', function(socket) {
 		io.sockets.emit('set_turn_id',{turn_id:room.turn_id});
 		console.log("Now turn:"+room.turn_id);
 		io.sockets.emit('check_turn_id',{turn_id:room.turn_id});
-		io.sockets.emit('start_countdown');
 	});
+
 	socket.on('send_point',function(userID,point){
 		for(var i=0;i<listplayer.length;i++){
 			if(userID == listplayer[i]){
@@ -131,27 +131,28 @@ io.on('connection', function(socket) {
 		}
 	});
 
+	socket.on('send_point_combo',function(userID,point,combo){
+		for(var i=0;i<listplayer.length;i++){
+			if(userID == listplayer[i]){
+				player_point[i] = point;
+				console.log('玩家'+i+'combo：'+combo);
+				io.sockets.emit('show_point',player_point);
+				io.sockets.emit('show_combo',combo);
+			}
+		}
+	});
 	//playing_player
 	socket.on('plus_playing_player', function() {
 		playing_player ++;
 		console.log('playing_player:' +playing_player);
 		io.sockets.emit('plus_playing_player_a', playing_player);
-		//start countdown
-		if(playing_player == 4) {
-			console.log('start_countdown');
-			io.sockets.emit("start_countdown");
-		}
 	});
 
-	
-
-	//disconnect
 	socket.on('disconnect', function() {
 		usernumber--;
 		if(usernumber <= 0){
 			usernumber = 0;
 		}
-
 		io.sockets.emit('usernum',usernumber);
 		console.log('socket disconnected :'+ socket.id);
 		for (var i = 0; i < listplayer.length; i++) {
@@ -173,7 +174,6 @@ io.on('connection', function(socket) {
 				}
 			}
 		}		
-	
 	});
 
 	//翻一張牌
@@ -220,17 +220,11 @@ io.on('connection', function(socket) {
 					socket.to(listplayer[i]).emit('returnindex');
 					console.log('有發送returnindex~');
 					console.log('listplayer:'+listplayer[i]);
-
 				}
 			}
-
 		}
-	
 	});
-	
 });
-
-
 
 var server = server.listen(app.get('port'), function(){
 	console.log('Start server on port 3000:');
