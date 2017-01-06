@@ -28,6 +28,7 @@
 		var a = 0;
 		var username;
 		var playing_player = 0;
+		var countdown_t = 10;
 
 		firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
@@ -340,6 +341,28 @@
 					socket.emit('gameover_someone');
 				});
 
+				//人數滿4人，開始倒數計時
+				socket.on('start_countdown', function() {
+					if(player_id == now_turn){
+						countdown_t = 10;
+						console.log('start_countdown3');
+						showTime();
+					}
+				});
+
+				function showTime() {
+					if(countdown_t>0 ){
+						countdown_t -= 1;
+   					 	document.getElementById('countdown').innerHTML= countdown_t;
+    
+    					if(countdown_t==0){
+        					socket.emit('add_turn');
+   	 					}
+    					//每秒執行一次,showTime()
+    					setTimeout("showTime()",1000);
+					}
+				}
+
 				socket.on('set_turn_id',function(room){
 					turn_id = room.turn_id;
 					console.log('現在排隊號碼是:'+turn_id);
@@ -440,6 +463,9 @@
 				<b id ='user_4'></b> <div id="point_3"></div>
 				
 			</div>
+
+			<!--倒數計時-->
+			<div id="countdown"></div>
 		</div>
 		<button onclick='golobby()' class ='end'>遊戲結束，回首頁</button>
 	</div>
