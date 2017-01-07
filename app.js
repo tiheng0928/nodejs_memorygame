@@ -144,7 +144,7 @@ io.on('connection', function(socket) {
 		}
 	});
 	*/
-	
+
 	//playing_player
 	socket.on('plus_playing_player', function() {
 		playing_player ++;
@@ -215,6 +215,7 @@ io.on('connection', function(socket) {
 		listplayer = [];
 		room.playernum = 0 ;
 		room.player_id = 0 ;
+		playing_player = 0 ;
 		console.log(room.playernum);
 	});
 
