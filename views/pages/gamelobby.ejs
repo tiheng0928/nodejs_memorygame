@@ -241,7 +241,7 @@
 					buttonid[1] = btn_id_2;
 					buttonval[0] = btn_val_1;
 					buttonval[1] = btn_val_2;
-					combo++;
+					//combo++;
 					console.log('翻出的牌為'+buttonid[0]+'號牌: '+buttonval[0]+' & '+buttonid[1]+'號牌: '+buttonval[1]);
 					Database.ref('Cards/' +btn_id_1).update({
 						'cards_status': false
@@ -251,17 +251,11 @@
 					});
 
 					if(player_id == now_turn){
-						if(combo>=2){
-							console.log("combo:"+combo);
-							point = point+10*combo;
-							socket.emit('send_point_combo',user_id,point,combo);
-						}
-						else{
-							point = point+10;
-							console.log(user_id);
-							socket.emit('send_point',user_id,point);
-						}
+						point = point+10;
+						console.log(user_id);
+						socket.emit('send_point',user_id,point);
 					}
+					
 
 					check_end();
 					buttonid = [];
@@ -286,7 +280,7 @@
 					buttonval = [];
 					clickcount = 0;
 					PK = 0;
-					combo = 0;
+					//combo = 0;
 				});
 
 				socket.on('show_combo',function(combo_num){
@@ -428,13 +422,15 @@
 					
 
 					//五秒後跳全體跳回首頁並歸0
-					setTimeout(function(){ 
-						//window.location.replace('http://fb-nodejs-pokergame.herokuapp.com/gamelobby');
-						window.location.replace('http://localhost:3000/gamelobby'); 
-					}, 5000);
-					combo = 0;
 					socket.emit('clear_0');
 					enter_id = 0;
+
+					setTimeout(function(){ 
+						window.location.replace('http://fb-nodejs-pokergame.herokuapp.com/gamelobby');
+						//window.location.replace('http://localhost:3000/gamelobby'); 
+					}, 5000);
+					//combo = 0;
+					
 					for(i=0;i<4;i++){
 						$("#point_"+i).html("<p>0</p>");
 					}
@@ -444,7 +440,7 @@
 				socket.on('clear_all',function(player_point,clear_player,clear_enter){
 					player_id = clear_player;
 					enter_id = clear_enter;
-					combo = 0;
+					//combo = 0;
 					for(i=0;i<player_point.length;i++){
 						console.log('player_'+i+':'+player_point[i]);
 						$("#point_"+i).html("<p>"+player_point[i]+"</p>");

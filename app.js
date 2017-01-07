@@ -132,6 +132,7 @@ io.on('connection', function(socket) {
 		}
 	});
 
+	/*
 	socket.on('send_point_combo',function(userID,point,combo){
 		for(var i=0;i<listplayer.length;i++){
 			if(userID == listplayer[i]){
@@ -142,6 +143,8 @@ io.on('connection', function(socket) {
 			}
 		}
 	});
+	*/
+	
 	//playing_player
 	socket.on('plus_playing_player', function() {
 		playing_player ++;
