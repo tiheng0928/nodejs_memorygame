@@ -207,12 +207,14 @@
 						if(clickcount==2){
 							//判斷牌的value是否一樣
 							if(buttonval[0] == buttonval[1]) {
+								document.getElementById('countdown').innerHTML= "恭喜翻對了!!請繼續。  您還有"+countdown_t+"秒";
 								//通知所有玩家，並將牌disable，此玩家繼續
 								socket.emit('same_value_a',buttonid[0],buttonid[1],buttonval[0],buttonval[1]);		
 							}
 							else{
 								//停止計時
 								stopShowTime();
+								document.getElementById('countdown').innerHTML= "您翻錯了，換人囉ㄎㄎㄎㄎㄎ!!!!!";
 								//通知所有玩家，牌的狀態不變，玩家換人
 								socket.emit('different_value',buttonid[0],buttonid[1],buttonval[0],buttonval[1]);
 								socket.emit('add_turn');													
@@ -358,9 +360,10 @@
 					stopShowTime();
 					if(countdown_t>0 ){
 						countdown_t -= 1;
-   					 	document.getElementById('countdown').innerHTML= countdown_t;
+   					 	document.getElementById('countdown').innerHTML= "現在是您的回合，時間還剩下"+countdown_t+"秒";
     
     					if(countdown_t==0){
+    						document.getElementById('countdown').innerHTML= "沒有考慮那麼久的啦!! 換人!!!";
         					socket.emit('add_turn');
    	 					}
     					//每秒執行一次,showTime()
@@ -413,6 +416,8 @@
 				}	
 				
 				socket.on('do_gameover', function(){   //呼叫遊戲結束
+					stopShowTime();
+					document.getElementById('countdown').innerHTML= "快樂的時光總是過得特別快。遊戲結束，即將返回首頁";
 					false_num = 0;
 					game_over = [];
 					socket.emit('gameover');
