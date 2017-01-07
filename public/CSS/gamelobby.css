@@ -9,6 +9,7 @@
 	padding-top: 110px;
 	box-sizing: border-box;
 	float: left;
+	background: #fff;
 }
 .game_area{
 	position: relative;
@@ -20,10 +21,11 @@
 	box-sizing: border-box;
 	float: left;
 	display: none;
+	background: #fff;
 }
 .game{
 	width:400px;
-	height: 250px;
+	height: 500px;
 	margin: auto;
 	margin-bottom: 20px;
 }
@@ -80,6 +82,7 @@
 	margin: auto;
 	padding-top: 50px;
 	box-sizing: border-box;
+	margin-bottom: 50px;
 }
 .room li{
 	list-style: none;
@@ -202,6 +205,7 @@ button[disabled=disabled]:hover{
 	float: right;
 	padding-top: 30px;
 	box-sizing: border-box;
+	background: #fff;
 }
 h2{
 	font-weight: 200;
@@ -210,6 +214,22 @@ h2{
 }
 h3{
 	font-weight: 200;
+}
+h4{
+	font-weight: 200;
+	font-size: 18px;
+	text-align: center;
+	margin-bottom: 15px;
+}
+.rule{
+	width: 50%;
+	margin-right: 25%;
+	margin-left: 25%;
+}
+.rule p{
+	text-align: left;
+	font-weight: 200;
+	margin-bottom: 10px;
 }
 .msg_area p{
 	font-weight: 200;
@@ -223,6 +243,7 @@ h3{
 	padding-top: 30px;
 	box-sizing: border-box;
 	display: none;
+	background: #fff;
 }
 .msg_area2 p{
 	font-size: 24px;
@@ -255,4 +276,8 @@ hr{
 .end:hover{
 	background: #A9AFD1;
 	color: #fff;
+}
+#countdown{
+	font-size: 20px;
+	font-weight: 200;
 }
