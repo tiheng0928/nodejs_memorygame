@@ -175,9 +175,7 @@
 						
 					</ul>
 				</div>
-				<div class="combo">
-					combo <span class="combo_num"></span>
-				</div>
+				
 				<div class="wait">
 					<p>還沒輪到你~</p>
 				</div>
@@ -426,9 +424,21 @@
 
 				socket.on('returnindex', function(){
 					//出現分數、玩家誰獲勝
+					//code 還沒寫
+					
+
+					//五秒後跳全體跳回首頁並歸0
+					setTimeout(function(){ 
+						//window.location.replace('http://fb-nodejs-pokergame.herokuapp.com/gamelobby');
+						window.location.replace('http://localhost:3000/gamelobby'); 
+					}, 5000);
 					combo = 0;
 					socket.emit('clear_0');
-					$('.end').show();
+					enter_id = 0;
+					for(i=0;i<4;i++){
+						$("#point_"+i).html("<p>0</p>");
+					}
+
 				});
 
 				socket.on('clear_all',function(player_point,clear_player,clear_enter){
@@ -440,13 +450,7 @@
 						$("#point_"+i).html("<p>"+player_point[i]+"</p>");
 					}
 				});
-				function golobby(){
-					window.location.replace('http://fb-nodejs-pokergame.herokuapp.com/gamelobby');
-					enter_id = 0;
-					for(i=0;i<4;i++){
-						$("#point_"+i).html("<p>0</p>");
-					}		
-				}
+			
 			</script>
 			<div class="msg_area">
 				<h2>目前線上人數：</h2>
@@ -482,7 +486,7 @@
 			<!--倒數計時-->
 			<div id="countdown"></div>
 		</div>
-		<button onclick='golobby()' class ='end'>遊戲結束，回首頁</button>
+		
 	</div>
 </body>
 </html>
