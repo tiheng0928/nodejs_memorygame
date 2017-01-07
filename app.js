@@ -118,6 +118,7 @@ io.on('connection', function(socket) {
 		io.sockets.emit('set_turn_id',{turn_id:room.turn_id});
 		console.log("Now turn:"+room.turn_id);
 		io.sockets.emit('check_turn_id',{turn_id:room.turn_id});
+		io.sockets.emit('start_countdown');
 	});
 
 	socket.on('send_point',function(userID,point){
@@ -146,6 +147,9 @@ io.on('connection', function(socket) {
 		playing_player ++;
 		console.log('playing_player:' +playing_player);
 		io.sockets.emit('plus_playing_player_a', playing_player);
+		if(playing_player==4){
+			io.sockets.emit('start_countdown');
+		}
 	});
 
 	socket.on('disconnect', function() {
@@ -184,6 +188,7 @@ io.on('connection', function(socket) {
 
 	socket.on('same_value_a', function(btn_id_1,btn_id_2,btn_val_1,btn_val_2){  //收到玩家正確翻牌訊息
 		socket.emit('same_value_b',btn_id_1,btn_id_2,btn_val_1,btn_val_2);	//讓資料庫牌狀態變false
+		io.sockets.emit('start_countdown');
 	});
 	/*
 	socket.on('displaypoint', function(){

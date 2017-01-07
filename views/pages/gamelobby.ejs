@@ -29,6 +29,7 @@
 		var username;
 		var playing_player = 0;
 		var countdown_t = 10;
+		var time_count;
 
 		firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
@@ -210,6 +211,8 @@
 								socket.emit('same_value_a',buttonid[0],buttonid[1],buttonval[0],buttonval[1]);		
 							}
 							else{
+								//停止計時
+								stopShowTime();
 								//通知所有玩家，牌的狀態不變，玩家換人
 								socket.emit('different_value',buttonid[0],buttonid[1],buttonval[0],buttonval[1]);
 								socket.emit('add_turn');													
@@ -347,12 +350,12 @@
 				socket.on('start_countdown', function() {
 					if(player_id == now_turn){
 						countdown_t = 10;
-						console.log('start_countdown3');
 						showTime();
 					}
 				});
 
 				function showTime() {
+					stopShowTime();
 					if(countdown_t>0 ){
 						countdown_t -= 1;
    					 	document.getElementById('countdown').innerHTML= countdown_t;
@@ -361,8 +364,12 @@
         					socket.emit('add_turn');
    	 					}
     					//每秒執行一次,showTime()
-    					setTimeout("showTime()",1000);
+    					time_count = setTimeout("showTime()",1000);
 					}
+				}
+
+				function stopShowTime() {
+					clearTimeout(time_count);
 				}
 
 				socket.on('set_turn_id',function(room){
