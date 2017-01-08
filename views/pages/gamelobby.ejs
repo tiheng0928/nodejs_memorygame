@@ -204,7 +204,7 @@
 
 				<script>
 					//紀錄8張牌的值以及其狀態
-					for(var i = 1 ; i <= 8 ; i++) {	
+					for(var i = 1 ; i <= 20 ; i++) {	
 						Database.ref('Cards/' +i).update({
 							'cards_status': true
 						});
@@ -417,10 +417,10 @@
 					
 					
 					function check_end(){
-						if(false_num != 8){
+						if(false_num != 20){
 							false_num = false_num + 2 ;
 							console.log('現在資料庫內false數量為：'+ false_num);
-							if(false_num == 8){				
+							if(false_num == 20){				
 								socket.emit('readtogameover');
 							}
 						}else{				
