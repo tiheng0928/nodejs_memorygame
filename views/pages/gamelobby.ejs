@@ -281,7 +281,7 @@
 							socket.emit('send_point',user_id,point);
 						}
 						
-
+						socket.emit('add_false_num');
 						check_end();
 						buttonid.length = 0;
 						buttonval.length = 0;
@@ -420,16 +420,17 @@
 					
 					
 					function check_end(){
-						if(false_num != 20){
-							false_num = false_num + 2 ;
-							console.log('現在資料庫內false數量為：'+ false_num);
-							if(false_num == 20){				
+						socket.emit('ask_false_num');
+						socket.on('now_false_num',function(falsenum){
+							false_num = falsenum;
+							if(false_num != 20){
+								console.log('現在資料庫內false數量為：'+ false_num);
+							}else{				
+								console.log('現在資料庫內false數量為：'+ false_num);
 								socket.emit('readtogameover');
 							}
-						}else{				
-							console.log('現在資料庫內false數量為：'+ false_num);
-							socket.emit('readtogameover');
-						}
+						})
+					
 					}	
 					
 					socket.on('do_gameover', function(){   //呼叫遊戲結束

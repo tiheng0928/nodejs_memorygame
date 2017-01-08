@@ -15,6 +15,7 @@ var socketID = new Array();
 var display_user = new Array();
 var usernumber = 0;
 var playing_player = 0;
+var false_num =0;
 
 // Initialize Firebase
 var config = {
@@ -215,6 +216,14 @@ io.on('connection', function(socket) {
 	socket.on('readtogameover', function(){
 		io.sockets.emit('show_point', player_point);
 		io.sockets.emit('do_gameover');
+	});
+
+	socket.on('add_false_num',function(){
+		false_num = false_num +2;
+	});
+
+	socket.on('ask_false_num',function(){
+		socket.emit('now_false_num',false_num);
 	});
 
 	socket.on('gameover', function(){
