@@ -8,7 +8,7 @@
 		var socket = io.connect();
 		var user_id;
 		var joined_player;
-		var enter_id;
+		var enter_id = 0;
 		var currentUserId;
        	var	userName;
         var email;
@@ -79,13 +79,13 @@
 						//socket.on('check_list_num');
 
 						$( document ).on( "click", "#join", function(){
-								if($("#join").prop("checked")){
-									console.log(user_id);
-									socket.emit('player_num_plus',user_id);		
-								}
-								else{
-									socket.emit('player_num_del');
-								}
+							if($("#join").prop("checked")){					
+								socket.emit('player_num_plus',user_id);
+							}
+
+							else{
+								socket.emit('player_num_del',user_id);
+							}
 						});	
 						
 						socket.on('get_user_id',function(userID){

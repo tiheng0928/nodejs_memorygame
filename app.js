@@ -35,8 +35,6 @@ app.use(express.static('public'));
 
 app.set('port', (process.env.PORT || 3000));
 
-
-
 app.get('/', page.index);
 app.get('/gamelobby', page.gamelobby);
 
@@ -55,38 +53,50 @@ io.on('connection', function(socket) {
 		socket.emit('check_player_num',room.playnum);
 	});
 	*/
-	socket.emit('set_enter_id',{enter_id:room.enter_id});
-	console.log(room.enter_id);
 
 	socket.on('player_num_plus',function(plus_data) {
 		socket.room = room;
 		room.playernum++;
-		room.enter_id = 1;
-		listplayer.push(plus_data);
-		console.log(plus_data);
-		for (var i = 0; i < listplayer.length; i++) {
-			console.log(listplayer[i]);
+		console.log('目前排隊人數:'+room.playernum);
+		if(room.playernum<=4){
+			room.enter_id = 1;
+			listplayer.push(plus_data);
+			console.log(plus_data);
+			for (var i = 0; i < listplayer.length; i++) {
+				console.log(listplayer[i]);
+			}
+			console.log('我的排隊號碼:'+room.enter_id);
+			io.sockets.emit('check_player_num',{playernum:room.playernum});
+			socket.emit('set_enter_id',{enter_id:room.enter_id});
+			if(room.playernum == 4){
+				io.sockets.emit('full_result');
+			}
 		}
-		console.log(room.enter_id);
-		io.sockets.emit('check_player_num',{playernum:room.playernum});
-		socket.emit('set_enter_id',{enter_id:room.enter_id});
-		if(room.playernum == 4){
-			io.sockets.emit('full_result');
+		else{
+			room.playernum--;
+			socket.emit('check_player_num',{playernum:room.playernum});
+			socket.emit('full_result');
 		}
 	});
 	
-	socket.on('player_num_del',function(){
+	socket.on('player_num_del',function(del_data){
 		socket.room = room;
-		room.playernum--;
-		room.enter_id = 0;
-		console.log(room.enter_id);
-		io.sockets.emit('check_player_num',{playernum:room.playernum});
-		socket.emit('set_enter_id',{enter_id:room.enter_id});
-		if(room.playernum != 4){
-			io.sockets.emit('empty_result');
-		}
-		else{
-			io.sockets.emit('full_result');
+		if(room.playernum > 0){
+			room.playernum--;
+			room.enter_id = 0;
+			for (var i = 0; i < listplayer.length; i++) {
+				if(listplayer[i] == del_data){
+					listplayer.splice(i,1);
+				}
+			}
+			io.sockets.emit('check_player_num',{playernum:room.playernum});
+			socket.emit('set_enter_id',{enter_id:room.enter_id});
+			if(room.playernum != 4){
+				io.sockets.emit('empty_result');
+			}
+			else{
+				io.sockets.emit('full_result');
+			}
 		}
 	});
 
@@ -163,7 +173,7 @@ io.on('connection', function(socket) {
 		io.sockets.emit('usernum',usernumber);
 		console.log('socket disconnected :'+ socket.id);
 		for (var i = 0; i < listplayer.length; i++) {
-			if (listplayer[i] == socket.id) {
+			if (listplayer[i] == socket.id && room.playernum > 0) {
 				room.playernum--;
 				io.sockets.emit('check_player_num',{playernum:room.playernum});
 				if(room.playernum != 4){
