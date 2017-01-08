@@ -208,8 +208,8 @@ io.on('connection', function(socket) {
 		io.sockets.emit('display_point_onpage');
 	});
 	*/
-	socket.on('different_value', function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {
-		io.sockets.emit('different_value',btn_id_1,btn_id_2,btn_val_1,btn_val_2);
+	socket.on('different_value_a', function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {
+		io.sockets.emit('different_value_b',btn_id_1,btn_id_2,btn_val_1,btn_val_2);
 	});
 
 	socket.on('readtogameover', function(){

@@ -203,7 +203,7 @@
 				
 
 				<script>
-					//紀錄8張牌的值以及其狀態
+					//回復20張牌的狀態
 					for(var i = 1 ; i <= 20 ; i++) {	
 						Database.ref('Cards/' +i).update({
 							'cards_status': true
@@ -212,19 +212,22 @@
 
 					function reply_clickid(clicked_id){
 						console.log('clicked_id:' +clicked_id);
-						buttonid[PK] = clicked_id;
 						console.log('this is buttonid: '+buttonid)
+						clickcount++;
 
 						firebase.database().ref('Cards/'+clicked_id).on('value', function(snapshot) {
-							buttonval[PK] = snapshot.val().cards_value;
-							console.log('this is buttonval: ' +buttonval);
-							console.log('PK: '+PK);
-							//判斷玩家點兩下之後換人
-							clickcount++;
-							socket.emit("click_card",clicked_id);
-							
+							if(clickcount == 1){
+								
+								buttonid[0] = clicked_id;
+								buttonval[0] = snapshot.val().cards_value;
+								console.log('this is buttonval: ' +buttonval);
+								socket.emit("click_card",clicked_id);
 
-							if(clickcount==2){
+							}else if(clickcount==2){
+	
+								buttonid[1] = clicked_id;
+								buttonval[1] = snapshot.val().cards_value;
+								socket.emit("click_card",clicked_id);
 								//判斷牌的value是否一樣
 								if(buttonval[0] == buttonval[1]) {
 									document.getElementById('countdown').innerHTML= "恭喜翻對了!!請繼續。  您還有"+countdown_t+"秒";
@@ -236,11 +239,11 @@
 									stopShowTime();
 									document.getElementById('countdown').innerHTML= "您翻錯了，換人囉ㄎㄎㄎㄎㄎ!!!!!";
 									//通知所有玩家，牌的狀態不變，玩家換人
-									socket.emit('different_value',buttonid[0],buttonid[1],buttonval[0],buttonval[1]);
+									socket.emit('different_value_a',buttonid[0],buttonid[1],buttonval[0],buttonval[1]);
 									socket.emit('add_turn');													
 								}
-							}
-							PK++;	
+								clickcount = 0;
+							}	
 						});
 					}
 
@@ -280,13 +283,13 @@
 						
 
 						check_end();
-						buttonid = [];
-						buttonval = [];
-						clickcount = 0;
-						PK = 0;
+						buttonid.length = 0;
+						buttonval.length = 0;
+						//clickcount = 0;
+						//PK = 0;
 					});
 
-					socket.on('different_value',function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {
+					socket.on('different_value_b',function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {
 						console.log('翻出的牌為'+btn_id_1+'號牌: '+btn_val_1+' & '+btn_id_2+'號牌: '+btn_val_2);
 						console.log('牌值不同，換人翻牌.');
 						$('#'+btn_id_1).delay(100).queue(function(next) { $(this).attr("disabled",false); next();});
@@ -298,10 +301,10 @@
 						$('#'+btn_id_2).delay(100).queue(function(next) { $(this).html(""); next();});
 
 						//$('#'+buttonid[1]).delay(1000).html('');
-						buttonid = [];
-						buttonval = [];
-						clickcount = 0;
-						PK = 0;
+						buttonid.length = 0;
+						buttonval.length = 0;
+						//clickcount = 0;
+						//PK = 0;
 						//combo = 0;
 					});
 
