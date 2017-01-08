@@ -213,6 +213,18 @@ io.on('connection', function(socket) {
 		io.sockets.emit('different_value_b',btn_id_1,btn_id_2,btn_val_1,btn_val_2);
 	});
 
+	socket.on('show_result',function(){
+		var max = player_point[0];
+		var win;
+		for (var i = 1; i < player_point.length; i++) {
+			if (player_point[i] > max) {
+            	max = player_point[i];
+            	win = i;
+        	}
+		}
+		io.sockets.emit('show_winner',display_user[win],max);
+	});
+
 	socket.on('readtogameover', function(){
 		io.sockets.emit('show_point', player_point);
 		io.sockets.emit('do_gameover');

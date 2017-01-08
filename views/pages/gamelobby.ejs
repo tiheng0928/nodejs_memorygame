@@ -30,6 +30,7 @@
 		var playing_player = 0;
 		var countdown_t = 10;
 		var time_count;
+		var winner;
 
 		firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
@@ -46,6 +47,9 @@
 
 <body>
 	<div class="background">
+		<div class="result">
+			<div class="result_window"></div>
+		</div>
 		<div class="wrap">
 			<div class="header">
 				<h1 class="h1">遊戲大廳</h1>
@@ -407,6 +411,17 @@
 						else{
 							$('.wait').fadeIn(500);
 						}
+						for(var i=0;i<4;i++){
+							var turn = 3 - i;
+							if(i == now_turn){
+								$("#point_"+turn).css("background","#3185FC");
+								$("#point_"+turn).css("color","#fff");
+							}
+							else{
+								$("#point_"+turn).css("background","#fff");
+								$("#point_"+turn).css("color","black");
+							}
+						}
 					});
 
 					socket.on('show_point',function(player_point){
@@ -438,8 +453,17 @@
 						document.getElementById('countdown').innerHTML= "快樂的時光總是過得特別快。遊戲結束，即將返回首頁";
 						false_num = 0;
 						game_over = [];
+						socket.emit('show_result');
 						socket.emit('gameover');
 						console.log('變數重置完成');
+					});
+
+					socket.on('show_winner',function(winner_id,win_point){
+						firebase.database().ref('users/'+winner_id).on('value', function(getname) {
+							winner = getname.val().username;
+						});
+						$(".result").fadeIn(300);
+						$(".result_window").html("<p>恭喜"+winner+"獲勝!!!</p>");
 					});
 
 					socket.on('returnindex', function(){
@@ -453,7 +477,7 @@
 
 						setTimeout(function(){ 
 							window.location.replace('http://fb-nodejs-pokergame.herokuapp.com/gamelobby');
-							//window.location.replace('http://localhost:3000/gamelobby'); 
+							$(".result").hide();
 						}, 5000);
 						//combo = 0;
 						
