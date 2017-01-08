@@ -251,7 +251,7 @@
 					});
 					//將所有排的val存在此陣列
 					
-						for ( cd = 1 ; cd<=8 ; cd++){
+						for ( cd = 1 ; cd<=20 ; cd++){
 							firebase.database().ref('Cards/'+cd+'/cards_value').on('value', function(hihihi) {
 								allCardVal.push(hihihi.val());
 								console.log('allCardVal: '+allCardVal);
