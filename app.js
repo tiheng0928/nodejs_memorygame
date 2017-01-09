@@ -162,6 +162,7 @@ io.on('connection', function(socket) {
 		io.sockets.emit('plus_playing_player_a', playing_player);
 		if(playing_player==4){
 			io.sockets.emit('start_countdown');
+			io.sockets.emit('game_start');
 		}
 	});
 

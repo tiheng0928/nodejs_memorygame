@@ -9,14 +9,14 @@
     color: #fff;
     border-radius: 3px;
     border: none;
-    background-color: #56F7C4;
+    background-color: #3399FF;
     float: right;
     cursor: pointer;
     margin-left: 35px;
 }
 #logout:hover{
     background-color: #02CBCE;
-     -webkit-transition: 1s;
+     -webkit-transition: 0.5s;
  }
 #enter_h1{
 	display: none;
@@ -93,6 +93,21 @@
 	font-size: 30px;
 	font-weight: 200;
 }
+.enter_wait{
+	position: absolute;
+	top: 0;
+	left: 0;
+	text-align: center;
+	width:100%;
+	height: 100%;
+	box-sizing: border-box;
+	background: rgba(0, 0, 0, 0.7);
+}
+.enter_wait p{
+	font-size: 35px;
+	line-height: 700px;
+	color: #fff;
+}
 .result{
 	position: absolute;
 	top:0;
@@ -150,14 +165,6 @@
 }
 .clear{
 	clear: both;
-}
-.combo{
-	text-align: center;
-	font-size: 24px;
-	display: none;
-}
-.combo b{
-	font-weight: 200;
 }
 /*------------------按鈕--------------------*/
 @-webkit-keyframes queue-animation {

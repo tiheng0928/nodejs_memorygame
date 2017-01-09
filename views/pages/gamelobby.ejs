@@ -199,7 +199,9 @@
 							<li><button onClick="reply_clickid(this.id)" class='button' id='20'></button></li>						
 						</ul>
 					</div>
-					
+					<div class="enter_wait">
+						<p>請等待玩家入場</p>
+					</div>
 					<div class="wait">
 						<p>還沒輪到你~</p>
 					</div>
@@ -307,13 +309,6 @@
 						buttonval.length = 0;
 					});
 
-					socket.on('show_combo',function(combo_num){
-						$(".combo").fadeIn(300);
-						$(".combo_num").html("<b> "+combo_num+" !!!</b>");
-						$(".combo").delay(600).fadeOut(300);
-						console.log("Yo");
-					});
-
 					$('#play_btn').click(function(){
 						$('.room_area').hide();
 						$('.h1').hide();
@@ -360,6 +355,10 @@
 					socket.on('someone_depart', function() {
 						$('.button').attr("disabled","disabled");
 						socket.emit('gameover_someone');
+					});
+
+					socket.on('game_start',function(){
+						$('.enter_wait').fadeOut(300);
 					});
 
 					//人數滿4人，開始倒數計時
