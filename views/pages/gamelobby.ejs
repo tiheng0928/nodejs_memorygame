@@ -47,7 +47,7 @@
 
 <body>
 	<div class="background">
-		<input type="button" id="logout" value="登出">
+		<input type="button" id="logout" onclick='logout()' value="登出">
 		<div class="result">
 			<div class="result_window">
 			</div>
@@ -163,6 +163,7 @@
 								$("#play_btn").attr("disabled","disabled");						
 							}
 						});
+
 					</script>
 				</div>
 
@@ -493,6 +494,20 @@
 							$("#point_"+i).html("<p>"+player_point[i]+"</p>");
 						}
 					});
+
+
+					function logout(){
+
+        				Database.ref('users/' + currentUserId).remove();
+        				firebase.auth().signOut().then(function() {
+  							console.log('Signed Out');
+						}, function(error) {
+  							console.error('Sign Out Error', error);
+						});
+            
+            			window.location.replace('http://fb-nodejs-pokergame.herokuapp.com/');
+            			//window.location.replace('http://localhost:3000/');		
+						}
 				
 				</script>
 				<div class="msg_area">
