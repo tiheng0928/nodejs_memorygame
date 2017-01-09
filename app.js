@@ -212,6 +212,10 @@ io.on('connection', function(socket) {
 		io.sockets.emit('different_value_b',btn_id_1,btn_id_2,btn_val_1,btn_val_2);
 	});
 
+	socket.on('timeout_recovery_a',function(card_recover){
+		io.sockets.emit('timeout_recovery_b',card_recover);
+	});
+
 	socket.on('show_result',function(){
 		var max = player_point[0];
 		var win;

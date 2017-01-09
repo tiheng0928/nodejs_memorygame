@@ -52,6 +52,7 @@ table {
 .background{
     width: 100%;
     background-image: url("../image/background.jpg");
+    position: relative;
 }
 .wrap{
     width: 800px;

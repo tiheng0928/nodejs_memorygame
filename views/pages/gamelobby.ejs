@@ -15,8 +15,8 @@
 		var player_id;
 		var turn_id;
 		var now_turn;
-		var buttonid = new Array(); //藉由buttonid去DB抓值用
-		var buttonval = new Array();//藉由buttonid去DB抓值用
+		var buttonid = new Array(); //藉由buttonid去存放按過的牌的id
+		var buttonval = new Array();//藉由buttonval去存放按過的牌的值
 		var clickcount = 0;
 		var PK = 0;
 		var allCardVal = new Array();//存所有牌值的陣列
@@ -47,6 +47,7 @@
 
 <body>
 	<div class="background">
+		<input type="button" id="logout" value="登出">
 		<div class="result">
 			<div class="result_window">
 			</div>
@@ -206,7 +207,6 @@
 
 				<!--倒數計時-->
 				
-
 				<script>
 					//回復20張牌的狀態
 					for(var i = 1 ; i <= 20 ; i++) {	
@@ -245,7 +245,7 @@
 									document.getElementById('countdown').innerHTML= "您翻錯了，換人囉ㄎㄎㄎㄎㄎ!!!!!";
 									//通知所有玩家，牌的狀態不變，玩家換人
 									socket.emit('different_value_a',buttonid[0],buttonid[1],buttonval[0],buttonval[1]);
-									socket.emit('add_turn');													
+									socket.emit('add_turn');											
 								}
 								clickcount = 0;
 							}	
@@ -290,27 +290,20 @@
 						check_end();
 						buttonid.length = 0;
 						buttonval.length = 0;
-						//clickcount = 0;
-						//PK = 0;
 					});
 
 					socket.on('different_value_b',function(btn_id_1,btn_id_2,btn_val_1,btn_val_2) {
 						console.log('翻出的牌為'+btn_id_1+'號牌: '+btn_val_1+' & '+btn_id_2+'號牌: '+btn_val_2);
 						console.log('牌值不同，換人翻牌.');
 						$('#'+btn_id_1).delay(100).queue(function(next) { $(this).attr("disabled",false); next();});
-						//$('#'+buttonid[0]).delay(1000).html('');
+
 						$('#'+btn_id_1).delay(100).queue(function(next) { $(this).html(""); next();});
 
-						//$('#'+buttonid[1]).delay(1000).attr("disabled",false);
 						$('#'+btn_id_2).delay(100).queue(function(next) { $(this).attr("disabled",false); next();});
 						$('#'+btn_id_2).delay(100).queue(function(next) { $(this).html(""); next();});
 
-						//$('#'+buttonid[1]).delay(1000).html('');
 						buttonid.length = 0;
 						buttonval.length = 0;
-						//clickcount = 0;
-						//PK = 0;
-						//combo = 0;
 					});
 
 					socket.on('show_combo',function(combo_num){
@@ -351,8 +344,6 @@
 						socket.emit('send_point',user_id,point);
 						console.log('分數:'+point);
 
-						//playing_player
-						//playing_player++;
 						socket.emit('plus_playing_player',playing_player);
 
 					});
@@ -386,6 +377,9 @@
 	    
 	    					if(countdown_t==0){
 	    						document.getElementById('countdown').innerHTML= "沒有考慮那麼久的啦!! 換人!!!";
+	    						if(clickcount==1){
+	        						socket.emit('timeout_recovery_a',buttonid[0]);
+	        					}
 	        					socket.emit('add_turn');
 	   	 					}
 	    					//每秒執行一次,showTime()
@@ -396,6 +390,13 @@
 					function stopShowTime() {
 						clearTimeout(time_count);
 					}
+
+					socket.on('timeout_recovery_b',function(card_recover){
+						$('#'+card_recover).delay(100).queue(function(next) { $(this).attr("disabled",false); next();});
+
+						$('#'+card_recover).delay(100).queue(function(next) { $(this).html(""); next();});
+
+					});
 
 					socket.on('set_turn_id',function(room){
 						turn_id = room.turn_id;
@@ -432,8 +433,7 @@
 							$("#point_"+i).html("<p>"+player_point[i]+"</p>");
 						}				
 					});
-					
-					
+							
 					function check_end(){
 						socket.emit('ask_false_num');
 						socket.on('now_false_num',function(falsenum){
