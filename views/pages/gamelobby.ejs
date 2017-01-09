@@ -451,7 +451,7 @@
 					socket.on('do_gameover', function(){   //呼叫遊戲結束
 						stopShowTime();
 						document.getElementById('countdown').innerHTML= "快樂的時光總是過得特別快。遊戲結束，即將返回首頁";
-						false_num = 0;
+						//false_num = 0;
 						game_over = [];
 						socket.emit('show_result');
 						socket.emit('gameover');
@@ -467,9 +467,6 @@
 					});
 
 					socket.on('returnindex', function(){
-						//出現分數、玩家誰獲勝
-						//code 還沒寫
-						
 
 						//五秒後跳全體跳回首頁並歸0
 						socket.emit('clear_0');

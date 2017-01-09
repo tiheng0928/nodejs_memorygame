@@ -247,6 +247,7 @@ io.on('connection', function(socket) {
 		room.playernum = 0 ;
 		room.player_id = 0 ;
 		playing_player = 0 ;
+		false_num = 0 ;
 		console.log(room.playernum);
 	});
 
