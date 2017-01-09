@@ -74,28 +74,37 @@
 	font-weight: 200;
 }
 .result{
-	position: relative;
+	position: absolute;
+	top:0;
+	left: 0;
 	width: 100%;
-	min-height: 100%;
+	height: 900px;
 	background: rgba(0, 0, 0, 0.6);
 	z-index: 1;
 	display: none;
 }
 .result_window{
 	position: absolute;
-	top:300px;
+	top:200px;
 	left:600px;
 	width: 350px;
-	line-height: 180px;
+	height: 200px;
 	border-radius: 5px;
 	background: #7C809B;
 	color: #fff;
 	text-align: center;
 	z-index: 2;
 }
+.result_window hr{
+	width: 90%;
+	margin-right: 5%;
+	margin-left: 5%;
+	border: 1px solid #BCBCBC;
+}
 .result_window p{
 	font-size: 24px;
 	font-weight: 200;
+	line-height: 180px;
 	font-family: 'Quicksand', sans-serif,'Noto Sans TC', sans-serif;
 }
 .room{
@@ -244,6 +253,12 @@ h4{
 	font-size: 18px;
 	text-align: center;
 	margin-bottom: 15px;
+}
+h5{
+	font-weight: 200;
+	font-size: 30px;
+	margin-top: 5px;
+	margin-bottom: 5px;
 }
 .rule{
 	width: 50%;

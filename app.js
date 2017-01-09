@@ -106,8 +106,8 @@ io.on('connection', function(socket) {
 		//socket.room = room;
 		firebaseID.push(currentUserId);
 		socketID.push(user_id);
-		console.log('資料庫ID陣列有：'+firebaseID); //顯示排隊陣列中的firebaseID
-		console.log('socketID陣列有：'+socketID)	//顯示排隊陣列中的socketID
+		console.log('資料庫ID陣列有：'+firebaseID); //顯示進入遊戲陣列中的firebaseID
+		console.log('socketID陣列有：'+socketID)	//顯示進入遊戲陣列中的socketID
 		
 		display_user.push(currentUserId);		//將排隊玩家的firebaseID依序插入display_user陣列
 		
@@ -133,10 +133,9 @@ io.on('connection', function(socket) {
 	});
 
 	socket.on('send_point',function(userID,point){
-		for(var i=0;i<listplayer.length;i++){
-			if(userID == listplayer[i]){
+		for(var i=0;i<socketID.length;i++){
+			if(userID == socketID[i]){
 				player_point[i] = point;
-				console.log('listplayer'+listplayer);
 				console.log('玩家'+i+'：'+player_point[i]);
 				io.sockets.emit('show_point',player_point);
 			}

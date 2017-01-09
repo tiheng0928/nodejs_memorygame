@@ -48,7 +48,8 @@
 <body>
 	<div class="background">
 		<div class="result">
-			<div class="result_window"></div>
+			<div class="result_window">
+			</div>
 		</div>
 		<div class="wrap">
 			<div class="header">
@@ -412,14 +413,13 @@
 							$('.wait').fadeIn(500);
 						}
 						for(var i=0;i<4;i++){
-							var turn = 3 - i;
 							if(i == now_turn){
-								$("#point_"+turn).css("background","#3185FC");
-								$("#point_"+turn).css("color","#fff");
+								$("#point_"+i).css("background","#3185FC");
+								$("#point_"+i).css("color","#fff");
 							}
 							else{
-								$("#point_"+turn).css("background","#fff");
-								$("#point_"+turn).css("color","black");
+								$("#point_"+i).css("background","#fff");
+								$("#point_"+i).css("color","black");
 							}
 						}
 					});
