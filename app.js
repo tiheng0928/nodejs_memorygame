@@ -187,8 +187,9 @@ io.on('connection', function(socket) {
 		console.log('playing_player:'+playing_player);
 		if (playing_player == 4) {
 			for(var i = 0 ; i < 4 ; i++){
-				if(socket.id == listplayer[i]){
+				if(socket.id == socketID[i]){
 					io.sockets.emit('someone_depart');
+					console.log('發送someone_depart了');
 				}
 			}
 		}		
@@ -220,12 +221,16 @@ io.on('connection', function(socket) {
 	socket.on('show_result',function(){
 		var max = player_point[0];
 		var win;
-		for (var i = 1; i < player_point.length; i++) {
-			if (player_point[i] > max) {
+		var i =0;
+		for (i = 0; i < player_point.length; i++) {
+			if (player_point[i] >= max) {
             	max = player_point[i];
+            	console.log(player_point[i]);
             	win = i;
         	}
 		}
+		console.log('win:'+win);
+		console.log('max:'+max);
 		io.sockets.emit('show_winner',display_user[win],max);
 	});
 
@@ -250,7 +255,10 @@ io.on('connection', function(socket) {
 		listplayer = [];
 		room.playernum = 0 ;
 		room.player_id = 0 ;
+		player_point = [] ;
 		playing_player = 0 ;
+		display_user = [] ;
+		socketID = [] ;
 		false_num = 0 ;
 		console.log(room.playernum);
 	});
@@ -262,9 +270,9 @@ io.on('connection', function(socket) {
 		for(var i =0; i <4 ; i++){
 			for(var j = 0; j <= i ; j++){
 				if(i == j ){
-					socket.to(listplayer[i]).emit('returnindex');
+					socket.to(socketID[i]).emit('returnindex_someone');
 					console.log('有發送returnindex~');
-					console.log('listplayer:'+listplayer[i]);
+					console.log('listplayer:'+socketID[i]);
 				}
 			}
 		}

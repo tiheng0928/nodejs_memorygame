@@ -454,44 +454,55 @@
 						//false_num = 0;
 						game_over = [];
 						socket.emit('show_result');
-						socket.emit('gameover');
+						
 						console.log('變數重置完成');
 					});
 
 					socket.on('show_winner',function(winner_id,win_point){
 						firebase.database().ref('users/'+winner_id).on('value', function(getname) {
+							console.log('winner_id'+winner_id);
 							winner = getname.val().username;
 						});
 						$(".result").fadeIn(300);
 						$(".result_window").html("<p>恭喜"+winner+"獲勝!!!</p>");
+						socket.emit('gameover');
 					});
 
 					socket.on('returnindex', function(){
-
+						console.log('有收到並執行returnindex');
 						//五秒後跳全體跳回首頁並歸0
 						socket.emit('clear_0');
 						enter_id = 0;
-
 						setTimeout(function(){ 
+							//window.location.replace('http://localhost:3000/gamelobby');
 							window.location.replace('http://fb-nodejs-pokergame.herokuapp.com/gamelobby');
 							$(".result").hide();
 						}, 5000);
 						//combo = 0;
-						
+						point = 0 ;
 						for(i=0;i<4;i++){
 							$("#point_"+i).html("<p>0</p>");
 						}
 
 					});
 
-					socket.on('clear_all',function(player_point,clear_player,clear_enter){
-						player_id = clear_player;
-						enter_id = clear_enter;
+					socket.on('returnindex_someone', function(){
+						console.log('有收到並執行returnindex');
+						//五秒後跳全體跳回首頁並歸0
+						socket.emit('clear_0');
+						enter_id = 0;
+						alert('有人斷線了，遊戲結束並返回大廳！');
+						setTimeout(function(){ 
+							window.location.replace('http://fb-nodejs-pokergame.herokuapp.com/gamelobby');
+							//window.location.replace('http://localhost:3000/gamelobby');
+							$(".result").hide();
+						}, 5000);
 						//combo = 0;
-						for(i=0;i<player_point.length;i++){
-							console.log('player_'+i+':'+player_point[i]);
-							$("#point_"+i).html("<p>"+player_point[i]+"</p>");
+						point = 0 ;
+						for(i=0;i<4;i++){
+							$("#point_"+i).html("<p>0</p>");
 						}
+
 					});
 
 
